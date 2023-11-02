@@ -13,7 +13,6 @@ import java.awt.Component;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import javax.swing.DefaultCellEditor;
-import javax.swing.ImageIcon;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -27,9 +26,6 @@ import javax.swing.table.TableColumn;
  */
 public class UITamizado extends javax.swing.JFrame {
 
-    /**
-     * Creates new form UItamizado
-     */
     private Fonts font;
 
     public UITamizado() {
@@ -47,13 +43,14 @@ public class UITamizado extends javax.swing.JFrame {
         jTableTamices.getTableHeader().setForeground(Color.WHITE);
         font();
         setSieved();
+        getTableCellEditor(jTableTamices);
     }
 
     private void font() {
         jTableTamices.getTableHeader().setFont(font.Font(font.ROBOTO_BOLD, 0, 12));
         jTableTamices.setFont(font.Font(font.ROBOTO_REGULAR, 0, 12));
-        jTextFieldWeightSample.setFont(font.Font(font.ROBOTO_REGULAR, 0, 12));
-        jLabel1.setFont(font.Font(font.ROBOTO_MEDIUM, 0, 18));
+        jTextFieldWeightSample.setFont(font.Font(font.ROBOTO_REGULAR, 1, 14));
+        jLabel1.setFont(font.Font(font.ROBOTO_MEDIUM, 1, 18));
     }
 
     private void autoAssign(double weightReturned, int row, DefaultTableModel model) {
@@ -89,6 +86,26 @@ public class UITamizado extends javax.swing.JFrame {
         }
     }
 
+    private void refreshPreviousValues(JTable jTable) {
+        DefaultTableModel model = (DefaultTableModel) jTable.getModel();
+        for (int row = 0; row < jTable.getRowCount(); row++) {
+            double value;
+            try {
+                value = Double.parseDouble(String.valueOf(jTable.getValueAt(row, 2))); // Verifica la columna que contiene los datos (columna 2 en este caso)
+                autoAssign(value, row, model);
+            } catch (NumberFormatException | ClassCastException e) {
+                value = 0.0;
+            }
+        }
+
+    }
+
+    private void clearTableValues(JTable jTable) {
+        DefaultTableModel model = (DefaultTableModel) jTable.getModel();
+        model.setRowCount(0); // Establece el número de filas en 0
+        setSieved();
+    }
+
     private void setSieved() {
         try {
             Tamices objTamices = new Tamices();
@@ -107,16 +124,14 @@ public class UITamizado extends javax.swing.JFrame {
                 jTableTamices.setValueAt(objTamices.getNumberTamices().get(i), i, 0);
                 jTableTamices.setValueAt(objTamices.getApertureSizeMm().get(i), i, 1);
             }
-
-            getTableCellEditor(model);
-
         } catch (Exception e) {
 
         }
     }
 
-    private void getTableCellEditor(DefaultTableModel model) {
-        TableColumn column2 = jTableTamices.getColumnModel().getColumn(2);
+    private void getTableCellEditor(JTable jTable) {
+        DefaultTableModel model = (DefaultTableModel) jTable.getModel();
+        TableColumn column2 = jTable.getColumnModel().getColumn(2);
 
         column2.setCellEditor(new DefaultCellEditor(new JTextField()) {
             @Override
@@ -138,17 +153,7 @@ public class UITamizado extends javax.swing.JFrame {
                             model.setValueAt(weightReturned, row, 2);
                         }
                         autoAssign(weightReturned, row, model);
-                        refreshPreviousValues(row);
                     }
-
-                    private void refreshPreviousValues(int row) {
-                        try {
-                            autoAssign((Double) model.getValueAt(row, 2), row, model);
-                        } catch (NumberFormatException | ClassCastException e) {
-                        }
-
-                    }
-
                 });
 
                 return editor;
@@ -177,6 +182,10 @@ public class UITamizado extends javax.swing.JFrame {
         jTextFieldWeightSample = new javax.swing.JTextField();
         jButtonBack = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
+        jPanel3 = new javax.swing.JPanel();
+        jButtonGraph = new javax.swing.JButton();
+        jButtonRefresh = new javax.swing.JButton();
+        jButtonClear = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -245,9 +254,9 @@ public class UITamizado extends javax.swing.JFrame {
         jTextFieldWeightSample.setForeground(new java.awt.Color(224, 224, 224));
         jTextFieldWeightSample.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         jTextFieldWeightSample.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "PESO MUESTRA (g)", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 11), new java.awt.Color(56, 142, 60))); // NOI18N
-        jPanel4.add(jTextFieldWeightSample, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 0, 190, 40));
+        jPanel4.add(jTextFieldWeightSample, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 190, 40));
 
-        jPanel1.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 90, 230, 40));
+        jPanel1.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 90, 190, 40));
 
         jButtonBack.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/back_32x32.png"))); // NOI18N
         jButtonBack.setBorderPainted(false);
@@ -269,6 +278,57 @@ public class UITamizado extends javax.swing.JFrame {
         jLabel1.setText("DISTRIBUCIÓN GRANULOMÉTRICA");
         jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 54, 653, 30));
 
+        jPanel3.setBackground(new java.awt.Color(51, 51, 51));
+        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Actions", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 11), new java.awt.Color(56, 142, 60))); // NOI18N
+        jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jButtonGraph.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/graph.png"))); // NOI18N
+        jButtonGraph.setBorderPainted(false);
+        jButtonGraph.setContentAreaFilled(false);
+        jButtonGraph.setFocusPainted(false);
+        jButtonGraph.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/graph.png"))); // NOI18N
+        jButtonGraph.setRolloverIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/graph_hover.png"))); // NOI18N
+        jButtonGraph.setRolloverSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/graph.png"))); // NOI18N
+        jButtonGraph.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/graph_hover.png"))); // NOI18N
+        jButtonGraph.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonGraphActionPerformed(evt);
+            }
+        });
+        jPanel3.add(jButtonGraph, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 15, 16, 16));
+
+        jButtonRefresh.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/update.png"))); // NOI18N
+        jButtonRefresh.setBorderPainted(false);
+        jButtonRefresh.setContentAreaFilled(false);
+        jButtonRefresh.setFocusPainted(false);
+        jButtonRefresh.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/update.png"))); // NOI18N
+        jButtonRefresh.setRolloverIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/update_hover.png"))); // NOI18N
+        jButtonRefresh.setRolloverSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/update.png"))); // NOI18N
+        jButtonRefresh.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/update_hover.png"))); // NOI18N
+        jButtonRefresh.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonRefreshActionPerformed(evt);
+            }
+        });
+        jPanel3.add(jButtonRefresh, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 15, 16, 16));
+
+        jButtonClear.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/clear.png"))); // NOI18N
+        jButtonClear.setBorderPainted(false);
+        jButtonClear.setContentAreaFilled(false);
+        jButtonClear.setFocusPainted(false);
+        jButtonClear.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/clear.png"))); // NOI18N
+        jButtonClear.setRolloverIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/clear_hover.png"))); // NOI18N
+        jButtonClear.setRolloverSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/clear.png"))); // NOI18N
+        jButtonClear.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/clear_hover.png"))); // NOI18N
+        jButtonClear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonClearActionPerformed(evt);
+            }
+        });
+        jPanel3.add(jButtonClear, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 15, 16, 16));
+
+        jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 90, 130, 40));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -286,6 +346,18 @@ public class UITamizado extends javax.swing.JFrame {
     private void jButtonBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBackActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButtonBackActionPerformed
+
+    private void jButtonGraphActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGraphActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButtonGraphActionPerformed
+
+    private void jButtonRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRefreshActionPerformed
+        refreshPreviousValues(jTableTamices);
+    }//GEN-LAST:event_jButtonRefreshActionPerformed
+
+    private void jButtonClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonClearActionPerformed
+        clearTableValues(jTableTamices);
+    }//GEN-LAST:event_jButtonClearActionPerformed
 
     /**
      * @param args the command line arguments
@@ -323,10 +395,14 @@ public class UITamizado extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonBack;
+    private javax.swing.JButton jButtonClear;
+    private javax.swing.JButton jButtonGraph;
+    private javax.swing.JButton jButtonRefresh;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
