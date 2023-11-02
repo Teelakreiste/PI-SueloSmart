@@ -5,6 +5,9 @@
  */
 package UI;
 
+import Entity.Fonts;
+import java.awt.Color;
+
 /**
  *
  * @author osmel
@@ -14,8 +17,26 @@ public class UItamizado extends javax.swing.JFrame {
     /**
      * Creates new form UItamizado
      */
+    private Fonts font;
+
     public UItamizado() {
         initComponents();
+        init();
+    }
+
+    private void init() {
+        font = new Fonts();
+        jTableTamices.getTableHeader().setOpaque(false);
+        jTableTamices.getTableHeader().setBackground(Color.decode("#388E3C"));
+        jTableTamices.getTableHeader().setForeground(Color.WHITE);
+        font();
+    }
+
+    private void font() {
+
+        jTableTamices.getTableHeader().setFont(font.Font(font.ROBOTO_BOLD, 0, 12));
+        jTableTamices.setFont(font.Font(font.ROBOTO_REGULAR, 0, 12));
+        jTextFieldWeightSample.setFont(font.Font(font.ROBOTO_REGULAR, 0, 12));
     }
 
     /**
@@ -29,16 +50,15 @@ public class UItamizado extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jPanel5 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jPanel6 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        jTableTamices = new javax.swing.JTable();
         jPanel4 = new javax.swing.JPanel();
-        jTextField1 = new javax.swing.JTextField();
+        jTextFieldWeightSample = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
-        jLabel3 = new javax.swing.JLabel();
+        jButtonBack = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -48,13 +68,9 @@ public class UItamizado extends javax.swing.JFrame {
         jPanel5.setBackground(new java.awt.Color(56, 142, 60));
         jPanel5.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/Logos/SueloSmart_35x35.png"))); // NOI18N
-        jPanel5.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 35, 35));
-
         jLabel2.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jLabel2.setText("<html>Suelo Smart<html>"
-        );
-        jPanel5.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 10, 70, 35));
+        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/logos/SueloSmart_v2_70x35.png"))); // NOI18N
+        jPanel5.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, 70, 35));
 
         jPanel1.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 660, 50));
 
@@ -65,10 +81,10 @@ public class UItamizado extends javax.swing.JFrame {
         jPanel2.setBackground(new java.awt.Color(51, 51, 51));
         jPanel2.setLayout(new java.awt.BorderLayout());
 
-        jTable1.setAutoCreateRowSorter(true);
-        jTable1.setBackground(new java.awt.Color(51, 51, 51));
-        jTable1.setForeground(new java.awt.Color(224, 224, 224));
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        jTableTamices.setAutoCreateRowSorter(true);
+        jTableTamices.setBackground(new java.awt.Color(51, 51, 51));
+        jTableTamices.setForeground(new java.awt.Color(224, 224, 224));
+        jTableTamices.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null},
                 {null, null, null, null, null},
@@ -88,9 +104,9 @@ public class UItamizado extends javax.swing.JFrame {
                 return types [columnIndex];
             }
         });
-        jTable1.setGridColor(new java.awt.Color(76, 175, 80));
-        jTable1.setSelectionBackground(new java.awt.Color(76, 175, 80));
-        jScrollPane1.setViewportView(jTable1);
+        jTableTamices.setGridColor(new java.awt.Color(76, 175, 80));
+        jTableTamices.setSelectionBackground(new java.awt.Color(76, 175, 80));
+        jScrollPane1.setViewportView(jTableTamices);
 
         jPanel2.add(jScrollPane1, java.awt.BorderLayout.CENTER);
 
@@ -99,33 +115,39 @@ public class UItamizado extends javax.swing.JFrame {
         jPanel4.setBackground(new java.awt.Color(51, 51, 51));
         jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jTextField1.setBackground(new java.awt.Color(51, 51, 51));
-        jTextField1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jTextField1.setForeground(new java.awt.Color(224, 224, 224));
-        jTextField1.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        jTextField1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "PESO MUESTRA (g)", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 11), new java.awt.Color(56, 142, 60))); // NOI18N
-        jPanel4.add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 160, 40));
+        jTextFieldWeightSample.setBackground(new java.awt.Color(51, 51, 51));
+        jTextFieldWeightSample.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jTextFieldWeightSample.setForeground(new java.awt.Color(224, 224, 224));
+        jTextFieldWeightSample.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        jTextFieldWeightSample.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "PESO MUESTRA (g)", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 11), new java.awt.Color(56, 142, 60))); // NOI18N
+        jPanel4.add(jTextFieldWeightSample, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 160, 40));
 
-        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/Botones/btn_ok.png"))); // NOI18N
+        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/btn_ok.png"))); // NOI18N
         jButton1.setBorderPainted(false);
         jButton1.setContentAreaFilled(false);
         jButton1.setFocusPainted(false);
-        jButton1.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/Botones/btn_ok.png"))); // NOI18N
-        jButton1.setRolloverIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/Botones/btn_ok_hover.png"))); // NOI18N
-        jButton1.setRolloverSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/Botones/btn_ok.png"))); // NOI18N
-        jButton1.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/Botones/btn_ok_hover.png"))); // NOI18N
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-        jPanel4.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 0, 60, 40));
+        jButton1.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/btn_ok.png"))); // NOI18N
+        jButton1.setRolloverIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/btn_ok_hover.png"))); // NOI18N
+        jButton1.setRolloverSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/btn_ok.png"))); // NOI18N
+        jButton1.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/btn_ok_hover.png"))); // NOI18N
+        jPanel4.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 0, 40, 40));
 
         jPanel1.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 60, 230, 40));
 
-        jLabel3.setForeground(new java.awt.Color(224, 224, 224));
-        jLabel3.setText("< Atrás");
-        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 70, -1, 20));
+        jButtonBack.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/back_32x32.png"))); // NOI18N
+        jButtonBack.setBorderPainted(false);
+        jButtonBack.setContentAreaFilled(false);
+        jButtonBack.setFocusPainted(false);
+        jButtonBack.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/back_32x32.png"))); // NOI18N
+        jButtonBack.setRolloverIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/back_hover_32x32.png"))); // NOI18N
+        jButtonBack.setRolloverSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/back_32x32.png"))); // NOI18N
+        jButtonBack.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/back_hover_32x32.png"))); // NOI18N
+        jButtonBack.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonBackActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jButtonBack, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 63, 32, 32));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -141,10 +163,9 @@ public class UItamizado extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void jButtonBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBackActionPerformed
         // TODO add your handling code here:
-        System.exit(WIDTH);
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_jButtonBackActionPerformed
 
     /**
      * @param args the command line arguments
@@ -183,17 +204,16 @@ public class UItamizado extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JButton jButtonBack;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JTable jTableTamices;
+    private javax.swing.JTextField jTextFieldWeightSample;
     // End of variables declaration//GEN-END:variables
 
 }

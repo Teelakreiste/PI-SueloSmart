@@ -1,0 +1,5 @@
+Verde Principal: #388E3C
+Verde Secundario: #4CAF50
+Gris Oscuro: #333333
+Gris Claro: #E0E0E0
+Blanco: #FFFFFF
