@@ -5,8 +5,7 @@
  */
 package UI;
 
-import javax.swing.JOptionPane;
-
+import Entity.Constants;
 
 /**
  *
@@ -14,15 +13,14 @@ import javax.swing.JOptionPane;
  */
 public class UILogin extends javax.swing.JFrame {
 
-    final String title = "SueloSmart";
-    
     public UILogin() {
         initComponents();
         init();
     }
-    
+
     private void init() {
-        setTitle(title + " - Iniciar sesión");
+        setLocationRelativeTo(null);
+        setTitle(Constants.TITLE + " - Iniciar sesión");
     }
 
     /**

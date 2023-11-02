@@ -5,38 +5,156 @@
  */
 package UI;
 
+import Entity.Constants;
 import Entity.Fonts;
+import Entity.Tamices;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import javax.swing.DefaultCellEditor;
+import javax.swing.ImageIcon;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 
 /**
  *
  * @author osmel
  */
-public class UItamizado extends javax.swing.JFrame {
+public class UITamizado extends javax.swing.JFrame {
 
     /**
      * Creates new form UItamizado
      */
     private Fonts font;
 
-    public UItamizado() {
+    public UITamizado() {
         initComponents();
         init();
     }
 
     private void init() {
+        setTitle(Constants.TITLE + " - Granulométria");
+        setLocationRelativeTo(null);
+//        setIconImage(new ImageIcon(getClass().getResource("/dispersas/Icon.png")).getImage());
         font = new Fonts();
         jTableTamices.getTableHeader().setOpaque(false);
         jTableTamices.getTableHeader().setBackground(Color.decode("#388E3C"));
         jTableTamices.getTableHeader().setForeground(Color.WHITE);
         font();
+        setSieved();
     }
 
     private void font() {
-
         jTableTamices.getTableHeader().setFont(font.Font(font.ROBOTO_BOLD, 0, 12));
         jTableTamices.setFont(font.Font(font.ROBOTO_REGULAR, 0, 12));
         jTextFieldWeightSample.setFont(font.Font(font.ROBOTO_REGULAR, 0, 12));
+        jLabel1.setFont(font.Font(font.ROBOTO_MEDIUM, 0, 18));
+    }
+
+    private void autoAssign(double weightReturned, int row, DefaultTableModel model) {
+        // Realiza los cálculos, reemplaza con tus fórmulas
+        Double percentagePasa = calculatePercentagePass(weightReturned);
+        model.setValueAt(percentagePasa, row, 3);
+        Double currentPercentage = 100.0;
+        int previousRow = getLastPercentage(row, model);
+
+        if (previousRow != -1) {
+            currentPercentage = (Double) model.getValueAt(previousRow, 4);
+        }
+
+        model.setValueAt((currentPercentage - percentagePasa), row, 4);
+    }
+
+    private int getLastPercentage(int row, DefaultTableModel model) {
+        for (int i = row - 1; i >= 0; i--) {
+            if (model.getValueAt(i, 4) != null) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private Double calculatePercentagePass(Double weightReturned) {
+        double weightSample;
+        try {
+            weightSample = Double.parseDouble(jTextFieldWeightSample.getText());
+            return (weightReturned / weightSample) * 100;
+        } catch (NumberFormatException e) {
+            return 0.0;
+        }
+    }
+
+    private void setSieved() {
+        try {
+            Tamices objTamices = new Tamices();
+            DefaultTableModel model = (DefaultTableModel) jTableTamices.getModel();
+            model.setRowCount(objTamices.getApertureSizeMm().size());
+
+            DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+            renderer.setHorizontalAlignment(SwingConstants.CENTER);
+
+            for (int i = 0; i < jTableTamices.getColumnCount(); i++) {
+                jTableTamices.getColumnModel().getColumn(i).setCellRenderer(renderer);
+            }
+
+            for (int i = 0; i < objTamices.getApertureSizeMm().size(); i++) {
+                model.isCellEditable(i, 0);
+                jTableTamices.setValueAt(objTamices.getNumberTamices().get(i), i, 0);
+                jTableTamices.setValueAt(objTamices.getApertureSizeMm().get(i), i, 1);
+            }
+
+            getTableCellEditor(model);
+
+        } catch (Exception e) {
+
+        }
+    }
+
+    private void getTableCellEditor(DefaultTableModel model) {
+        TableColumn column2 = jTableTamices.getColumnModel().getColumn(2);
+
+        column2.setCellEditor(new DefaultCellEditor(new JTextField()) {
+            @Override
+            public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+                JTextField editor = (JTextField) super.getTableCellEditorComponent(table, value, isSelected, row, column);
+
+                editor.addFocusListener(new FocusAdapter() {
+                    @Override
+                    public void focusLost(FocusEvent e) {
+                        updateValues(row);
+                    }
+
+                    private void updateValues(int row) {
+                        // Realiza los cálculos en tiempo real y actualiza las columnas 3 y 4
+                        Double weightReturned = 0.0;
+                        try {
+                            weightReturned = Double.parseDouble((String) model.getValueAt(row, 2));
+                        } catch (NumberFormatException | ClassCastException e) {
+                            model.setValueAt(weightReturned, row, 2);
+                        }
+                        autoAssign(weightReturned, row, model);
+                        refreshPreviousValues(row);
+                    }
+
+                    private void refreshPreviousValues(int row) {
+                        try {
+                            autoAssign((Double) model.getValueAt(row, 2), row, model);
+                        } catch (NumberFormatException | ClassCastException e) {
+                        }
+
+                    }
+
+                });
+
+                return editor;
+            }
+        }
+        );
     }
 
     /**
@@ -57,8 +175,8 @@ public class UItamizado extends javax.swing.JFrame {
         jTableTamices = new javax.swing.JTable();
         jPanel4 = new javax.swing.JPanel();
         jTextFieldWeightSample = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
         jButtonBack = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -99,9 +217,16 @@ public class UItamizado extends javax.swing.JFrame {
             Class[] types = new Class [] {
                 java.lang.String.class, java.lang.Double.class, java.lang.Double.class, java.lang.Double.class, java.lang.Double.class
             };
+            boolean[] canEdit = new boolean [] {
+                false, false, true, false, false
+            };
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
             }
         });
         jTableTamices.setGridColor(new java.awt.Color(76, 175, 80));
@@ -110,7 +235,7 @@ public class UItamizado extends javax.swing.JFrame {
 
         jPanel2.add(jScrollPane1, java.awt.BorderLayout.CENTER);
 
-        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 110, 610, 280));
+        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 140, 610, 250));
 
         jPanel4.setBackground(new java.awt.Color(51, 51, 51));
         jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -120,19 +245,9 @@ public class UItamizado extends javax.swing.JFrame {
         jTextFieldWeightSample.setForeground(new java.awt.Color(224, 224, 224));
         jTextFieldWeightSample.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         jTextFieldWeightSample.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "PESO MUESTRA (g)", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 11), new java.awt.Color(56, 142, 60))); // NOI18N
-        jPanel4.add(jTextFieldWeightSample, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 160, 40));
+        jPanel4.add(jTextFieldWeightSample, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 0, 190, 40));
 
-        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/btn_ok.png"))); // NOI18N
-        jButton1.setBorderPainted(false);
-        jButton1.setContentAreaFilled(false);
-        jButton1.setFocusPainted(false);
-        jButton1.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/btn_ok.png"))); // NOI18N
-        jButton1.setRolloverIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/btn_ok_hover.png"))); // NOI18N
-        jButton1.setRolloverSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/btn_ok.png"))); // NOI18N
-        jButton1.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/btn_ok_hover.png"))); // NOI18N
-        jPanel4.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 0, 40, 40));
-
-        jPanel1.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 60, 230, 40));
+        jPanel1.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 90, 230, 40));
 
         jButtonBack.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/back_32x32.png"))); // NOI18N
         jButtonBack.setBorderPainted(false);
@@ -147,7 +262,12 @@ public class UItamizado extends javax.swing.JFrame {
                 jButtonBackActionPerformed(evt);
             }
         });
-        jPanel1.add(jButtonBack, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 63, 32, 32));
+        jPanel1.add(jButtonBack, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 95, 32, 32));
+
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setText("DISTRIBUCIÓN GRANULOMÉTRICA");
+        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 54, 653, 30));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -181,30 +301,29 @@ public class UItamizado extends javax.swing.JFrame {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
+
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(UItamizado.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(UItamizado.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(UItamizado.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(UItamizado.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(UITamizado.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         }
+        //</editor-fold>
+        //</editor-fold>
+
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new UItamizado().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new UITamizado().setVisible(true);
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButtonBack;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
