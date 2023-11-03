@@ -22,7 +22,6 @@ public class UILogin extends javax.swing.JFrame {
         setLocationRelativeTo(null);
         setTitle(Constants.TITLE + " - Iniciar sesión");
     }
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -88,16 +87,16 @@ public class UILogin extends javax.swing.JFrame {
 
         jButton1.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jButton1.setForeground(new java.awt.Color(240, 240, 240));
-        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/Botones/Boton_100x50.png"))); // NOI18N
+        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/Boton_100x50.png"))); // NOI18N
         jButton1.setText("Iniciar sesión");
         jButton1.setBorderPainted(false);
         jButton1.setContentAreaFilled(false);
         jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton1.setPreferredSize(new java.awt.Dimension(100, 50));
-        jButton1.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/Botones/Boton_100x50.png"))); // NOI18N
-        jButton1.setRolloverIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/Botones/Boton_hover_100x50.png"))); // NOI18N
-        jButton1.setRolloverSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/Botones/Boton_100x50.png"))); // NOI18N
-        jButton1.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/Botones/Boton_hover_100x50.png"))); // NOI18N
+        jButton1.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/Boton_100x50.png"))); // NOI18N
+        jButton1.setRolloverIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/Boton_hover_100x50.png"))); // NOI18N
+        jButton1.setRolloverSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/Boton_100x50.png"))); // NOI18N
+        jButton1.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/Boton_hover_100x50.png"))); // NOI18N
         jPanel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 290, -1, -1));
 
         jLabelPassword1.setBackground(new java.awt.Color(204, 204, 204));
@@ -129,7 +128,7 @@ public class UILogin extends javax.swing.JFrame {
 
         jLabel1.setForeground(new java.awt.Color(153, 255, 255));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/Botones/Buton2_220x30.png"))); // NOI18N
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/Buton2_220x30.png"))); // NOI18N
         jLabel1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jLabel1.setPreferredSize(new java.awt.Dimension(220, 30));
         jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 350, -1, -1));

@@ -6,12 +6,15 @@
 package UI;
 
 import Entity.Constants;
+import Entity.Fonts;
 
 /**
  *
  * @author osmel
  */
 public class UILogin1 extends javax.swing.JFrame {
+
+    private Fonts font;
 
     public UILogin1() {
         initComponents();
@@ -21,6 +24,18 @@ public class UILogin1 extends javax.swing.JFrame {
     private void init() {
         setLocationRelativeTo(null);
         setTitle(Constants.TITLE + " - Iniciar sesión");
+        font();
+    }
+
+    private void font() {
+        font = new Fonts();
+
+        jLabelTitle.setFont(font.Font(font.ROBOTO_MEDIUM, 1, 24));
+        jLabelUser.setFont(font.Font(font.ROBOTO_BOLD, 0, 11));
+        jLabelPassword.setFont(font.Font(font.ROBOTO_BOLD, 0, 11));
+        jTextFieldUser.setFont(font.Font(font.ROBOTO_REGULAR, 0, 14));
+        jPasswordFieldPassword.setFont(font.Font(font.ROBOTO_REGULAR, 0, 14));
+        jButtonLogin.setFont(font.Font(font.ROBOTO_BOLD, 1, 11));
     }
 
     /**
@@ -34,24 +49,28 @@ public class UILogin1 extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
-        jLabelTitulo = new javax.swing.JLabel();
+        jLabelTitle = new javax.swing.JLabel();
         jLabelUser = new javax.swing.JLabel();
-        jTextFieldRoundUser = new jtextfieldround.JTextFieldRound();
-        jLabelPassword1 = new javax.swing.JLabel();
-        jPasswordFieldRoundPassword = new jtextfieldround.JPasswordFieldRound();
-        jLabelPassword2 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
+        jLabelPassword = new javax.swing.JLabel();
+        jLabelForgotPassword = new javax.swing.JLabel();
+        jButtonLogin = new javax.swing.JButton();
+        jLabelMessage = new javax.swing.JLabel();
+        jLabelRegister = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
-        jLabel5 = new javax.swing.JLabel();
+        jLabelOffline = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
+        jButtonOpen2 = new javax.swing.JButton();
+        jButtonOpen1 = new javax.swing.JButton();
+        jTextFieldUser = new javax.swing.JTextField();
+        jPasswordFieldPassword = new javax.swing.JPasswordField();
         jLogo = new javax.swing.JLabel();
         jPanel5 = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setUndecorated(true);
+        setResizable(false);
 
         jPanel1.setBackground(new java.awt.Color(51, 51, 51));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -60,12 +79,12 @@ public class UILogin1 extends javax.swing.JFrame {
         jPanel4.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabelTitulo.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
-        jLabelTitulo.setForeground(new java.awt.Color(240, 240, 240));
-        jLabelTitulo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabelTitulo.setText("INICIAR SESIÓN");
-        jLabelTitulo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jPanel4.add(jLabelTitulo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 70, 330, -1));
+        jLabelTitle.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        jLabelTitle.setForeground(new java.awt.Color(240, 240, 240));
+        jLabelTitle.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabelTitle.setText("INICIAR SESIÓN");
+        jLabelTitle.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jPanel4.add(jLabelTitle, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 70, 330, -1));
 
         jLabelUser.setBackground(new java.awt.Color(204, 204, 204));
         jLabelUser.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
@@ -73,62 +92,54 @@ public class UILogin1 extends javax.swing.JFrame {
         jLabelUser.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabelUser.setText("Usuario");
         jPanel4.add(jLabelUser, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 120, 330, -1));
-        jPanel4.add(jTextFieldRoundUser, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 140, 260, 40));
 
-        jLabelPassword1.setBackground(new java.awt.Color(204, 204, 204));
-        jLabelPassword1.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        jLabelPassword1.setForeground(new java.awt.Color(224, 224, 224));
-        jLabelPassword1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabelPassword1.setText("Contraseña");
-        jPanel4.add(jLabelPassword1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 200, 330, -1));
+        jLabelPassword.setBackground(new java.awt.Color(204, 204, 204));
+        jLabelPassword.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLabelPassword.setForeground(new java.awt.Color(224, 224, 224));
+        jLabelPassword.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabelPassword.setText("Contraseña");
+        jPanel4.add(jLabelPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 200, 330, -1));
 
-        jPasswordFieldRoundPassword.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jPasswordFieldRoundPasswordActionPerformed(evt);
-            }
-        });
-        jPanel4.add(jPasswordFieldRoundPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 220, 260, 40));
+        jLabelForgotPassword.setBackground(new java.awt.Color(204, 204, 204));
+        jLabelForgotPassword.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLabelForgotPassword.setForeground(new java.awt.Color(76, 175, 80));
+        jLabelForgotPassword.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabelForgotPassword.setText("¿Olvidó su contraseña?");
+        jLabelForgotPassword.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jPanel4.add(jLabelForgotPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 260, 160, -1));
 
-        jLabelPassword2.setBackground(new java.awt.Color(204, 204, 204));
-        jLabelPassword2.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        jLabelPassword2.setForeground(new java.awt.Color(76, 175, 80));
-        jLabelPassword2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabelPassword2.setText("¿Olvidó su contraseña?");
-        jLabelPassword2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jPanel4.add(jLabelPassword2, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 260, 160, -1));
+        jButtonLogin.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        jButtonLogin.setForeground(new java.awt.Color(240, 240, 240));
+        jButtonLogin.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/Boton_100x50.png"))); // NOI18N
+        jButtonLogin.setText("Iniciar sesión");
+        jButtonLogin.setBorderPainted(false);
+        jButtonLogin.setContentAreaFilled(false);
+        jButtonLogin.setFocusPainted(false);
+        jButtonLogin.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButtonLogin.setPreferredSize(new java.awt.Dimension(100, 50));
+        jButtonLogin.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/Boton_100x50.png"))); // NOI18N
+        jButtonLogin.setRolloverIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/Boton_hover_100x50.png"))); // NOI18N
+        jButtonLogin.setRolloverSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/Boton_100x50.png"))); // NOI18N
+        jButtonLogin.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/Boton_hover_100x50.png"))); // NOI18N
+        jPanel4.add(jButtonLogin, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 290, 110, -1));
 
-        jButton1.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jButton1.setForeground(new java.awt.Color(240, 240, 240));
-        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/Botones/Boton_100x50.png"))); // NOI18N
-        jButton1.setText("Iniciar sesión");
-        jButton1.setBorderPainted(false);
-        jButton1.setContentAreaFilled(false);
-        jButton1.setFocusPainted(false);
-        jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton1.setPreferredSize(new java.awt.Dimension(100, 50));
-        jButton1.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/Botones/Boton_100x50.png"))); // NOI18N
-        jButton1.setRolloverIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/Botones/Boton_hover_100x50.png"))); // NOI18N
-        jButton1.setRolloverSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/Botones/Boton_100x50.png"))); // NOI18N
-        jButton1.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/Botones/Boton_hover_100x50.png"))); // NOI18N
-        jPanel4.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 290, 110, -1));
+        jLabelMessage.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        jLabelMessage.setForeground(new java.awt.Color(76, 175, 80));
+        jLabelMessage.setText("¿No tiene cuenta?");
+        jLabelMessage.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jLabelMessage.setPreferredSize(new java.awt.Dimension(89, 30));
+        jPanel4.add(jLabelMessage, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 350, 90, 30));
 
-        jLabel3.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(76, 175, 80));
-        jLabel3.setText("¿No tiene cuenta?");
-        jLabel3.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jLabel3.setPreferredSize(new java.awt.Dimension(89, 30));
-        jPanel4.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 350, 90, 30));
-
-        jLabel4.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(224, 224, 224));
-        jLabel4.setText("Regístrese aquí.");
-        jLabel4.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jLabel4.setPreferredSize(new java.awt.Dimension(78, 30));
-        jPanel4.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 350, -1, 30));
+        jLabelRegister.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        jLabelRegister.setForeground(new java.awt.Color(224, 224, 224));
+        jLabelRegister.setText("Regístrese aquí.");
+        jLabelRegister.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabelRegister.setPreferredSize(new java.awt.Dimension(78, 30));
+        jPanel4.add(jLabelRegister, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 350, -1, 30));
 
         jLabel1.setForeground(new java.awt.Color(153, 255, 255));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/Botones/Buton2_220x30.png"))); // NOI18N
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/Buton2_220x30.png"))); // NOI18N
         jLabel1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jPanel4.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 350, -1, -1));
 
@@ -136,20 +147,56 @@ public class UILogin1 extends javax.swing.JFrame {
         jPanel3.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel5.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jLabel5.setForeground(new java.awt.Color(51, 51, 51));
-        jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel5.setText("Continuar modo desconectado");
-        jLabel5.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jLabel5.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jPanel3.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 330, 20));
+        jLabelOffline.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        jLabelOffline.setForeground(new java.awt.Color(51, 51, 51));
+        jLabelOffline.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabelOffline.setText("Continuar modo desconectado");
+        jLabelOffline.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabelOffline.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jLabelOffline.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabelOfflineMouseClicked(evt);
+            }
+        });
+        jPanel3.add(jLabelOffline, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 330, 20));
 
         jPanel4.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 410, 330, 20));
 
         jPanel2.setBackground(new java.awt.Color(56, 142, 60));
         jPanel2.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jButtonOpen2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/close.png"))); // NOI18N
+        jButtonOpen2.setBorderPainted(false);
+        jButtonOpen2.setContentAreaFilled(false);
+        jButtonOpen2.setFocusPainted(false);
+        jButtonOpen2.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/close.png"))); // NOI18N
+        jButtonOpen2.setRolloverIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/close_hover.png"))); // NOI18N
+        jButtonOpen2.setRolloverSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/close.png"))); // NOI18N
+        jButtonOpen2.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/close_hover.png"))); // NOI18N
+        jPanel2.add(jButtonOpen2, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 18, 16, 16));
+
+        jButtonOpen1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/minimize.png"))); // NOI18N
+        jButtonOpen1.setBorderPainted(false);
+        jButtonOpen1.setContentAreaFilled(false);
+        jButtonOpen1.setFocusPainted(false);
+        jButtonOpen1.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/minimize.png"))); // NOI18N
+        jButtonOpen1.setRolloverIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/minimize_hover.png"))); // NOI18N
+        jButtonOpen1.setRolloverSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/minimize.png"))); // NOI18N
+        jButtonOpen1.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/minimize_hover.png"))); // NOI18N
+        jPanel2.add(jButtonOpen1, new org.netbeans.lib.awtextra.AbsoluteConstraints(285, 18, 16, 16));
+
         jPanel4.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 330, 50));
+
+        jTextFieldUser.setBackground(new java.awt.Color(51, 51, 51));
+        jTextFieldUser.setForeground(new java.awt.Color(224, 224, 224));
+        jTextFieldUser.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 2, 0, new java.awt.Color(76, 175, 80)));
+        jPanel4.add(jTextFieldUser, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 140, 260, 40));
+
+        jPasswordFieldPassword.setBackground(new java.awt.Color(51, 51, 51));
+        jPasswordFieldPassword.setForeground(new java.awt.Color(224, 224, 224));
+        jPasswordFieldPassword.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 2, 0, new java.awt.Color(76, 175, 80)));
+        jPanel4.add(jPasswordFieldPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 220, 260, 40));
 
         jPanel1.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 0, 330, 430));
 
@@ -178,9 +225,10 @@ public class UILogin1 extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jPasswordFieldRoundPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jPasswordFieldRoundPasswordActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jPasswordFieldRoundPasswordActionPerformed
+    private void jLabelOfflineMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelOfflineMouseClicked
+        this.dispose();
+        new UITamizado().setVisible(true);
+    }//GEN-LAST:event_jLabelOfflineMouseClicked
 
     /**
      * @param args the command line arguments
@@ -198,35 +246,32 @@ public class UILogin1 extends javax.swing.JFrame {
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(UILogin1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(UILogin1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(UILogin1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(UILogin1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
         //</editor-fold>
 
+        //</editor-fold>
+        //</editor-fold>
+
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new UILogin1().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new UILogin1().setVisible(true);
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButtonLogin;
+    private javax.swing.JButton jButtonOpen1;
+    private javax.swing.JButton jButtonOpen2;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabelPassword1;
-    private javax.swing.JLabel jLabelPassword2;
-    private javax.swing.JLabel jLabelTitulo;
+    private javax.swing.JLabel jLabelForgotPassword;
+    private javax.swing.JLabel jLabelMessage;
+    private javax.swing.JLabel jLabelOffline;
+    private javax.swing.JLabel jLabelPassword;
+    private javax.swing.JLabel jLabelRegister;
+    private javax.swing.JLabel jLabelTitle;
     private javax.swing.JLabel jLabelUser;
     private javax.swing.JLabel jLogo;
     private javax.swing.JPanel jPanel1;
@@ -235,7 +280,7 @@ public class UILogin1 extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
-    private jtextfieldround.JPasswordFieldRound jPasswordFieldRoundPassword;
-    private jtextfieldround.JTextFieldRound jTextFieldRoundUser;
+    private javax.swing.JPasswordField jPasswordFieldPassword;
+    private javax.swing.JTextField jTextFieldUser;
     // End of variables declaration//GEN-END:variables
 }

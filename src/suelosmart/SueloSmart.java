@@ -5,7 +5,7 @@
  */
 package suelosmart;
 
-import UI.UITamizado;
+import UI.UILogin1;
 
 /**
  *
@@ -17,7 +17,7 @@ public class SueloSmart {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        new UITamizado().setVisible(true);
+        new UILogin1().setVisible(true);
     }
 
 }

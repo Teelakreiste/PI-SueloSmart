@@ -13,8 +13,8 @@ import java.util.ArrayList;
  */
 public class Tamices {
 
-    private ArrayList<String> numberTamices;
-    private ArrayList<Double> apertureSizeMm;
+    private final ArrayList<String> numberTamices;
+    private final ArrayList<Double> apertureSizeMm;
     private final ReadCSV rCSV = new ReadCSV();
 
     public Tamices() {
