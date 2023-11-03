@@ -30,12 +30,12 @@ import javax.swing.table.TableColumn;
  *
  * @author osmel
  */
-public class UITamizado extends javax.swing.JFrame {
+public class UITamized extends javax.swing.JFrame {
 
     private Fonts font;
     private FileManager fileManager;
 
-    public UITamizado() {
+    public UITamized() {
         initComponents();
         init();
     }
@@ -506,7 +506,7 @@ public class UITamizado extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonExitMousePressed
 
     private void jButtonMinimizeMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonMinimizeMousePressed
-        setState(UITamizado.ICONIFIED);
+        setState(UITamized.ICONIFIED);
     }//GEN-LAST:event_jButtonMinimizeMousePressed
 
     private void jButtonOpenMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonOpenMousePressed
@@ -588,10 +588,12 @@ public class UITamizado extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(UITamizado.class
+            java.util.logging.Logger.getLogger(UITamized.class
                     .getName()).log(java.util.logging.Level.SEVERE, null, ex);
 
         }
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
 
@@ -600,7 +602,7 @@ public class UITamizado extends javax.swing.JFrame {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
-            new UITamizado().setVisible(true);
+            new UITamized().setVisible(true);
         });
     }
 

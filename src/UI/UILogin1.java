@@ -227,7 +227,7 @@ public class UILogin1 extends javax.swing.JFrame {
 
     private void jLabelOfflineMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelOfflineMouseClicked
         this.dispose();
-        new UITamizado().setVisible(true);
+        new UITamized().setVisible(true);
     }//GEN-LAST:event_jLabelOfflineMouseClicked
 
     /**
