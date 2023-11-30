@@ -3,4 +3,5 @@ Verde Secundario: #4CAF50
 Gris Oscuro: #333333
 Gris Claro: #E0E0E0
 Gris: #A5A5A5
+Negro: #282828
 Blanco: #FFFFFF

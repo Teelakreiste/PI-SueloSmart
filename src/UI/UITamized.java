@@ -6,22 +6,29 @@
 package UI;
 
 import Entity.Constants;
-import Entity.FileManager;
 import Entity.Fonts;
-import Entity.GranulometryGraph;
 import Entity.Graph;
+import Entity.SaveRestoreData;
 import Entity.Tamices;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.text.DecimalFormat;
 import javax.swing.DefaultCellEditor;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
+import javax.swing.border.LineBorder;
+import javax.swing.plaf.basic.BasicScrollBarUI;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
@@ -33,7 +40,8 @@ import javax.swing.table.TableColumn;
 public class UITamized extends javax.swing.JFrame {
 
     private Fonts font;
-    private FileManager fileManager;
+    private SaveRestoreData saveRestoreData;
+    private int xMouse, yMouse;
 
     public UITamized() {
         initComponents();
@@ -41,17 +49,22 @@ public class UITamized extends javax.swing.JFrame {
     }
 
     private void init() {
-        fileManager = new FileManager();
+        saveRestoreData = new SaveRestoreData();
+        font = new Fonts();
+
         setTitle(Constants.TITLE + " - Granulométria");
         setLocationRelativeTo(null);
 //        setIconImage(new ImageIcon(getClass().getResource("/dispersas/Icon.png")).getImage());
-        font = new Fonts();
-        jTableTamices.getTableHeader().setOpaque(false);
-        jTableTamices.getTableHeader().setBackground(Color.decode("#388E3C"));
-        jTableTamices.getTableHeader().setForeground(Color.WHITE);
+
         font();
+
+        jTableTamices.getTableHeader().setBackground(Color.decode("#388E3C"));
+        setForegroundtByElement(jTableTamices.getTableHeader(), "FFF");
+
         setSieved();
         getTableCellEditor(jTableTamices);
+        customScrollBar(jScrollPaneTamices);
+        customTableHeader(jTableTamices);
 
         jButtonSaveAs.setVisible(false);
     }
@@ -60,9 +73,33 @@ public class UITamized extends javax.swing.JFrame {
         jTableTamices.getTableHeader().setFont(font.Font(font.ROBOTO_BOLD, 0, 12));
         jTableTamices.setFont(font.Font(font.ROBOTO_REGULAR, 0, 12));
         jTextFieldWeightSample.setFont(font.Font(font.ROBOTO_REGULAR, 1, 14));
-        jLabel1.setFont(font.Font(font.ROBOTO_MEDIUM, 1, 18));
+        jLabelTitle.setFont(font.Font(font.ROBOTO_MEDIUM, 1, 18));
         jLabelFile.setFont(font.Font(font.ROBOTO_LIGHT, 0, 11));
         jLabelFileInfo.setFont(font.Font(font.ROBOTO_LIGHT, 0, 11));
+    }
+
+    public void setData(SaveRestoreData saveRestoreData) {
+        this.saveRestoreData = saveRestoreData;
+        assignData();
+    }
+
+    private void assignData() {
+        try {
+            saveRestoreData.assignData(jTableTamices, 4);
+            JTable sample = new JTable(1, 2);
+            saveRestoreData.assignData(sample, 5);
+
+            jTextFieldWeightSample.setText((String) sample.getValueAt(0, 1));
+
+            jButtonSaveAs.setVisible(true);
+
+            setTextByElement(jLabelFileInfo, "Datos cargados exitosamente.");
+            jLabelTimer(jLabelFileInfo, 0);
+            setTextByElement(jLabelFile, "Project: " + saveRestoreData.getPROJECT_FOLDER());
+            jLabelTitle.setText("SUELOSMART - " + saveRestoreData.getPROJECT_FOLDER());
+        } catch (IndexOutOfBoundsException e) {
+
+        }
     }
 
     // Crea un temporizador con el tiempo especificado
@@ -81,16 +118,17 @@ public class UITamized extends javax.swing.JFrame {
 
     private void autoAssign(double weightReturned, int row, DefaultTableModel model) {
         // Realiza los cálculos, reemplaza con tus fórmulas
-        Double percentagePasa = calculatePercentagePass(weightReturned);
-        model.setValueAt(percentagePasa, row, 3);
-        Double currentPercentage = 100.0;
+        double percentageRetained = fixFormatDecimal(calculatePercentageRetained(weightReturned));
+        model.setValueAt(percentageRetained, row, 3);
+        double currentPercentage = 100.0;
         int previousRow = getLastPercentage(row, model);
 
         if (previousRow != -1) {
-            currentPercentage = (Double) model.getValueAt(previousRow, 4);
+            currentPercentage = (double) model.getValueAt(previousRow, 4);
         }
 
-        model.setValueAt((currentPercentage - percentagePasa), row, 4);
+        double percentagePass = fixFormatDecimal((currentPercentage - percentageRetained));
+        model.setValueAt(fixFormatDecimal(percentagePass), row, 4);
     }
 
     private int getLastPercentage(int row, DefaultTableModel model) {
@@ -102,7 +140,26 @@ public class UITamized extends javax.swing.JFrame {
         return -1;
     }
 
-    private Double calculatePercentagePass(Double weightReturned) {
+    private double fixFormatDecimal(double value) {
+        // Crear la parte decimal del patrón
+        StringBuilder decimalPattern = new StringBuilder(".");
+        int decimalPlaces = Integer.parseInt(jFormattedTextFieldFix.getText());
+        for (int i = 0; i < decimalPlaces; i++) {
+            decimalPattern.append("0");
+        }
+
+        String strTolerance = "1e-" + (decimalPlaces - 1);
+        double tolerance = Double.parseDouble(strTolerance); // Puedes ajustar este valor según tu precisión requerida
+
+        if (Math.abs(value) < tolerance) {
+            return 0.0;
+        } else {
+            DecimalFormat df = new DecimalFormat("#" + decimalPattern.toString());
+            return Double.parseDouble(df.format(value));
+        }
+    }
+
+    private double calculatePercentageRetained(double weightReturned) {
         double weightSample;
         try {
             weightSample = Double.parseDouble(jTextFieldWeightSample.getText().trim().replace("g", ""));
@@ -132,16 +189,20 @@ public class UITamized extends javax.swing.JFrame {
     }
 
     private void setTableTamices(String[][] matriz, JTable jTable) {
-        DefaultTableModel model = (DefaultTableModel) jTable.getModel();
-        model.setRowCount(matriz.length);
+        try {
+            DefaultTableModel model = (DefaultTableModel) jTable.getModel();
+            model.setRowCount(matriz.length);
 
-        for (int i = 0; i < matriz.length; i++) {
-            for (int j = 0; j < matriz[0].length; j++) {
-                String data = matriz[i][j];
-                if (!data.equals("null")) {
-                    model.setValueAt(data, i, j);
+            for (int i = 0; i < matriz.length; i++) {
+                for (int j = 0; j < matriz[0].length; j++) {
+                    String data = matriz[i][j];
+                    if (!data.equals("null")) {
+                        model.setValueAt(data, i, j);
+                    }
                 }
             }
+        } catch (Exception e) {
+
         }
     }
 
@@ -168,6 +229,39 @@ public class UITamized extends javax.swing.JFrame {
         }
     }
 
+    private void customScrollBar(JScrollPane jScrollPane) {
+        jScrollPane.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
+            @Override
+            protected void configureScrollBarColors() {
+                thumbColor = Color.decode("#282828");
+                thumbDarkShadowColor = Color.decode("#282828");
+                thumbHighlightColor = Color.decode("#282828");
+            }
+
+            @Override
+            protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
+                g.setColor(Color.decode("#333333"));
+                g.fillRect(trackBounds.x, trackBounds.y, trackBounds.width, trackBounds.height);
+            }
+        });
+    }
+
+    private void customTableHeader(JTable jTable) {
+
+        jTable.getTableHeader().setDefaultRenderer(new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+                setBackground(Color.decode("#388E3C")); // Cambia el color del fondo según tus preferencias
+                setForeground(Color.WHITE); // Cambia el color del texto según tus preferencias
+                setHorizontalAlignment(SwingConstants.CENTER); // Centra el texto
+                return this;
+            }
+
+        });
+    }
+
     private void getTableCellEditor(JTable jTable) {
         DefaultTableModel model = (DefaultTableModel) jTable.getModel();
         TableColumn column2 = jTable.getColumnModel().getColumn(2);
@@ -177,6 +271,12 @@ public class UITamized extends javax.swing.JFrame {
             public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
                 JTextField editor = (JTextField) super.getTableCellEditorComponent(table, value, isSelected, row, column);
 
+                editor.setBorder(new LineBorder(Color.decode("#388E3C"), 2));
+                editor.setBackground(Color.decode("#388E3C"));
+                editor.setForeground(Color.WHITE);
+                editor.setHorizontalAlignment(0);
+                editor.setSelectionColor(Color.decode("#333333"));
+
                 editor.addFocusListener(new FocusAdapter() {
                     @Override
                     public void focusLost(FocusEvent e) {
@@ -185,7 +285,7 @@ public class UITamized extends javax.swing.JFrame {
 
                     private void updateValues(int row) {
                         // Realiza los cálculos en tiempo real y actualiza las columnas 3 y 4
-                        Double weightReturned = 0.0;
+                        double weightReturned = 0.0;
                         try {
                             weightReturned = Double.parseDouble((String) model.getValueAt(row, 2));
                         } catch (NumberFormatException | ClassCastException | NullPointerException e) {
@@ -221,6 +321,19 @@ public class UITamized extends javax.swing.JFrame {
         return data;
     }
 
+    private void setTextByElement(JComponent component, String text) {
+        if (component instanceof JLabel) {
+            ((JLabel) component).setText(text);
+        } else if (component instanceof JTextField) {
+            ((JTextField) component).setText(text);
+        }
+    }
+
+    private void setForegroundtByElement(JComponent component, String colorHex) {
+        colorHex = (colorHex.contains("#")) ? colorHex : "#" + colorHex;
+        component.setForeground(Color.decode(colorHex));
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -230,43 +343,61 @@ public class UITamized extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel1 = new javax.swing.JPanel();
-        jPanel5 = new javax.swing.JPanel();
+        jPanelBackground = new javax.swing.JPanel();
+        jPanelHeader = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jButtonMinimize = new javax.swing.JButton();
         jButtonExit = new javax.swing.JButton();
-        jPanel6 = new javax.swing.JPanel();
+        jLabelTitle = new javax.swing.JLabel();
+        jPanelFooter = new javax.swing.JPanel();
         jLabelFileInfo = new javax.swing.JLabel();
         jLabelFile = new javax.swing.JLabel();
-        jPanel2 = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
+        jPanelTamices = new javax.swing.JPanel();
+        jScrollPaneTamices = new javax.swing.JScrollPane();
         jTableTamices = new javax.swing.JTable();
-        jPanel4 = new javax.swing.JPanel();
+        jPanelWeightSample = new javax.swing.JPanel();
         jTextFieldWeightSample = new javax.swing.JTextField();
-        jLabel1 = new javax.swing.JLabel();
-        jPanel3 = new javax.swing.JPanel();
+        jPanelOptionBar = new javax.swing.JPanel();
         jButtonGraph = new javax.swing.JButton();
         jButtonRefresh = new javax.swing.JButton();
         jButtonClear = new javax.swing.JButton();
+        jButtonNew = new javax.swing.JButton();
         jButtonOpen = new javax.swing.JButton();
         jButtonSave = new javax.swing.JButton();
         jButtonSaveAs = new javax.swing.JButton();
         jButtonBack = new javax.swing.JButton();
+        jPanelFix = new javax.swing.JPanel();
+        jFormattedTextFieldFix = new javax.swing.JFormattedTextField();
+        jLabelFix = new javax.swing.JLabel();
+        jPanelFixPlus = new javax.swing.JPanel();
+        jLabelFixPlus = new javax.swing.JLabel();
+        jPanelFixMinus = new javax.swing.JPanel();
+        jLabelFixMinus = new javax.swing.JLabel();
         jLabelActionBg = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
         setResizable(false);
 
-        jPanel1.setBackground(new java.awt.Color(51, 51, 51));
-        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        jPanelBackground.setBackground(new java.awt.Color(51, 51, 51));
+        jPanelBackground.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel5.setBackground(new java.awt.Color(56, 142, 60));
-        jPanel5.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        jPanelHeader.setBackground(new java.awt.Color(56, 142, 60));
+        jPanelHeader.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseDragged(java.awt.event.MouseEvent evt) {
+                jPanelHeaderMouseDragged(evt);
+            }
+        });
+        jPanelHeader.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                jPanelHeaderMousePressed(evt);
+            }
+        });
+        jPanelHeader.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/logos/SueloSmart_v2_70x35.png"))); // NOI18N
-        jPanel5.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 8, 70, 35));
+        jPanelHeader.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 8, 70, 35));
 
         jButtonMinimize.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/minimize.png"))); // NOI18N
         jButtonMinimize.setBorderPainted(false);
@@ -281,7 +412,7 @@ public class UITamized extends javax.swing.JFrame {
                 jButtonMinimizeMousePressed(evt);
             }
         });
-        jPanel5.add(jButtonMinimize, new org.netbeans.lib.awtextra.AbsoluteConstraints(605, 18, 16, 16));
+        jPanelHeader.add(jButtonMinimize, new org.netbeans.lib.awtextra.AbsoluteConstraints(605, 18, 16, 16));
 
         jButtonExit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/close.png"))); // NOI18N
         jButtonExit.setBorderPainted(false);
@@ -296,39 +427,44 @@ public class UITamized extends javax.swing.JFrame {
                 jButtonExitMousePressed(evt);
             }
         });
-        jPanel5.add(jButtonExit, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 18, 16, 16));
+        jPanelHeader.add(jButtonExit, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 18, 16, 16));
 
-        jPanel1.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 660, 50));
+        jLabelTitle.setForeground(new java.awt.Color(224, 224, 224));
+        jLabelTitle.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabelTitle.setText("DISTRIBUCIÓN GRANULOMÉTRICA");
+        jPanelHeader.add(jLabelTitle, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 653, 30));
 
-        jPanel6.setBackground(new java.awt.Color(56, 142, 60));
-        jPanel6.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        jPanelBackground.add(jPanelHeader, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 660, 50));
+
+        jPanelFooter.setBackground(new java.awt.Color(56, 142, 60));
+        jPanelFooter.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabelFileInfo.setForeground(new java.awt.Color(255, 255, 51));
         jLabelFileInfo.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jPanel6.add(jLabelFileInfo, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 0, 300, 20));
+        jPanelFooter.add(jLabelFileInfo, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 0, 300, 20));
 
         jLabelFile.setForeground(new java.awt.Color(255, 255, 255));
         jLabelFile.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        jPanel6.add(jLabelFile, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 0, 300, 20));
+        jPanelFooter.add(jLabelFile, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 0, 300, 20));
 
-        jPanel1.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 410, 660, 20));
+        jPanelBackground.add(jPanelFooter, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 410, 660, 20));
 
-        jPanel2.setBackground(new java.awt.Color(51, 51, 51));
-        jPanel2.setLayout(new java.awt.BorderLayout());
+        jPanelTamices.setBackground(new java.awt.Color(51, 51, 51));
+        jPanelTamices.setLayout(new java.awt.BorderLayout());
 
-        jTableTamices.setAutoCreateRowSorter(true);
+        jScrollPaneTamices.setBackground(new java.awt.Color(51, 51, 51));
+        jScrollPaneTamices.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(40, 40, 40)));
+        jScrollPaneTamices.setFocusable(false);
+        jScrollPaneTamices.setRequestFocusEnabled(false);
+
         jTableTamices.setBackground(new java.awt.Color(51, 51, 51));
         jTableTamices.setForeground(new java.awt.Color(224, 224, 224));
         jTableTamices.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
+
             },
             new String [] {
-                "N° Tamiz", "Abertura (mm)", "Peso retenido (g)", "% pasa", "% retenido"
+                "TAMIZ", "ABERTURA (mm)", "PESO RETENIDO (g)", "% RETENIDO", "% PASA"
             }
         ) {
             Class[] types = new Class [] {
@@ -346,22 +482,27 @@ public class UITamized extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        jTableTamices.setFillsViewportHeight(true);
         jTableTamices.setGridColor(new java.awt.Color(76, 175, 80));
         jTableTamices.setSelectionBackground(new java.awt.Color(76, 175, 80));
-        jScrollPane1.setViewportView(jTableTamices);
+        jTableTamices.setShowHorizontalLines(false);
+        jTableTamices.setShowVerticalLines(false);
+        jScrollPaneTamices.setViewportView(jTableTamices);
 
-        jPanel2.add(jScrollPane1, java.awt.BorderLayout.CENTER);
+        jPanelTamices.add(jScrollPaneTamices, java.awt.BorderLayout.CENTER);
 
-        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 140, 610, 250));
+        jPanelBackground.add(jPanelTamices, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 140, 610, 250));
 
-        jPanel4.setBackground(new java.awt.Color(51, 51, 51));
-        jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        jPanelWeightSample.setBackground(new java.awt.Color(51, 51, 51));
+        jPanelWeightSample.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jTextFieldWeightSample.setBackground(new java.awt.Color(51, 51, 51));
         jTextFieldWeightSample.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jTextFieldWeightSample.setForeground(new java.awt.Color(224, 224, 224));
+        jTextFieldWeightSample.setForeground(new java.awt.Color(153, 153, 153));
         jTextFieldWeightSample.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        jTextFieldWeightSample.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createEtchedBorder(), javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+        jTextFieldWeightSample.setText("Peso muestra (g)");
+        jTextFieldWeightSample.setBorder(javax.swing.BorderFactory.createCompoundBorder(null, javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+        jTextFieldWeightSample.setSelectionColor(new java.awt.Color(76, 175, 80));
         jTextFieldWeightSample.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 jTextFieldWeightSampleFocusGained(evt);
@@ -370,17 +511,17 @@ public class UITamized extends javax.swing.JFrame {
                 jTextFieldWeightSampleFocusLost(evt);
             }
         });
-        jPanel4.add(jTextFieldWeightSample, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 190, 40));
+        jTextFieldWeightSample.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                jTextFieldWeightSampleMousePressed(evt);
+            }
+        });
+        jPanelWeightSample.add(jTextFieldWeightSample, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 190, 30));
 
-        jPanel1.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 90, 190, 40));
+        jPanelBackground.add(jPanelWeightSample, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 95, 190, 30));
 
-        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("DISTRIBUCIÓN GRANULOMÉTRICA");
-        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 54, 653, 30));
-
-        jPanel3.setBackground(new java.awt.Color(51, 51, 51));
-        jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        jPanelOptionBar.setBackground(new java.awt.Color(51, 51, 51));
+        jPanelOptionBar.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jButtonGraph.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/graph.png"))); // NOI18N
         jButtonGraph.setBorderPainted(false);
@@ -395,7 +536,7 @@ public class UITamized extends javax.swing.JFrame {
                 jButtonGraphMousePressed(evt);
             }
         });
-        jPanel3.add(jButtonGraph, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 12, 16, 16));
+        jPanelOptionBar.add(jButtonGraph, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 12, 16, 16));
 
         jButtonRefresh.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/update.png"))); // NOI18N
         jButtonRefresh.setBorderPainted(false);
@@ -410,7 +551,7 @@ public class UITamized extends javax.swing.JFrame {
                 jButtonRefreshMousePressed(evt);
             }
         });
-        jPanel3.add(jButtonRefresh, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 12, 16, 16));
+        jPanelOptionBar.add(jButtonRefresh, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 12, 16, 16));
 
         jButtonClear.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/clear.png"))); // NOI18N
         jButtonClear.setBorderPainted(false);
@@ -425,7 +566,22 @@ public class UITamized extends javax.swing.JFrame {
                 jButtonClearMousePressed(evt);
             }
         });
-        jPanel3.add(jButtonClear, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 12, 16, 16));
+        jPanelOptionBar.add(jButtonClear, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 12, 16, 16));
+
+        jButtonNew.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/new.png"))); // NOI18N
+        jButtonNew.setBorderPainted(false);
+        jButtonNew.setContentAreaFilled(false);
+        jButtonNew.setFocusPainted(false);
+        jButtonNew.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/new.png"))); // NOI18N
+        jButtonNew.setRolloverIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/new_hover.png"))); // NOI18N
+        jButtonNew.setRolloverSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/new.png"))); // NOI18N
+        jButtonNew.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/new_hover.png"))); // NOI18N
+        jButtonNew.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                jButtonNewMousePressed(evt);
+            }
+        });
+        jPanelOptionBar.add(jButtonNew, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 12, 16, 16));
 
         jButtonOpen.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/open.png"))); // NOI18N
         jButtonOpen.setBorderPainted(false);
@@ -440,7 +596,7 @@ public class UITamized extends javax.swing.JFrame {
                 jButtonOpenMousePressed(evt);
             }
         });
-        jPanel3.add(jButtonOpen, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 12, 16, 16));
+        jPanelOptionBar.add(jButtonOpen, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 12, 16, 16));
 
         jButtonSave.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/save.png"))); // NOI18N
         jButtonSave.setBorderPainted(false);
@@ -455,7 +611,7 @@ public class UITamized extends javax.swing.JFrame {
                 jButtonSaveMousePressed(evt);
             }
         });
-        jPanel3.add(jButtonSave, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 12, 16, 16));
+        jPanelOptionBar.add(jButtonSave, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 12, 16, 16));
 
         jButtonSaveAs.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/save_as.png"))); // NOI18N
         jButtonSaveAs.setBorderPainted(false);
@@ -470,7 +626,7 @@ public class UITamized extends javax.swing.JFrame {
                 jButtonSaveAsMousePressed(evt);
             }
         });
-        jPanel3.add(jButtonSaveAs, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 12, 16, 16));
+        jPanelOptionBar.add(jButtonSaveAs, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 12, 16, 16));
 
         jButtonBack.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/back_16x16.png"))); // NOI18N
         jButtonBack.setBorderPainted(false);
@@ -480,22 +636,98 @@ public class UITamized extends javax.swing.JFrame {
         jButtonBack.setRolloverIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/back_hover_16x16.png"))); // NOI18N
         jButtonBack.setRolloverSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/back_16x16.png"))); // NOI18N
         jButtonBack.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/back_hover_16x16.png"))); // NOI18N
-        jPanel3.add(jButtonBack, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 12, 16, 16));
+        jButtonBack.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                jButtonBackMousePressed(evt);
+            }
+        });
+        jPanelOptionBar.add(jButtonBack, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 12, 16, 16));
+
+        jPanelFix.setBackground(new java.awt.Color(51, 51, 51));
+        jPanelFix.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jFormattedTextFieldFix.setBackground(new java.awt.Color(51, 51, 51));
+        jFormattedTextFieldFix.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 0, 0, new java.awt.Color(40, 40, 40)), javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+        jFormattedTextFieldFix.setForeground(new java.awt.Color(224, 224, 224));
+        jFormattedTextFieldFix.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(java.text.NumberFormat.getIntegerInstance())));
+        jFormattedTextFieldFix.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        jFormattedTextFieldFix.setText("3");
+        jFormattedTextFieldFix.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jFormattedTextFieldFix.setSelectionColor(new java.awt.Color(76, 175, 80));
+        jFormattedTextFieldFix.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                jFormattedTextFieldFixFocusLost(evt);
+            }
+        });
+        jPanelFix.add(jFormattedTextFieldFix, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 0, 30, 30));
+
+        jLabelFix.setBackground(new java.awt.Color(51, 51, 51));
+        jLabelFix.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabelFix.setForeground(new java.awt.Color(153, 153, 153));
+        jLabelFix.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabelFix.setText("FIX");
+        jPanelFix.add(jLabelFix, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 30, 30));
+
+        jPanelFixPlus.setBackground(new java.awt.Color(51, 51, 51));
+        jPanelFixPlus.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabelFixPlus.setFont(new java.awt.Font("Tahoma", 0, 7)); // NOI18N
+        jLabelFixPlus.setForeground(new java.awt.Color(153, 153, 153));
+        jLabelFixPlus.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabelFixPlus.setText("▲");
+        jLabelFixPlus.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabelFixPlusMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                jLabelFixPlusMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jLabelFixPlusMouseExited(evt);
+            }
+        });
+        jPanelFixPlus.add(jLabelFixPlus, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 15, 15));
+
+        jPanelFix.add(jPanelFixPlus, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 0, 15, 15));
+
+        jPanelFixMinus.setBackground(new java.awt.Color(51, 51, 51));
+        jPanelFixMinus.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabelFixMinus.setFont(new java.awt.Font("Tahoma", 0, 7)); // NOI18N
+        jLabelFixMinus.setForeground(new java.awt.Color(153, 153, 153));
+        jLabelFixMinus.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabelFixMinus.setText("▼");
+        jLabelFixMinus.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabelFixMinusMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                jLabelFixMinusMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jLabelFixMinusMouseExited(evt);
+            }
+        });
+        jPanelFixMinus.add(jLabelFixMinus, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 15, 15));
+
+        jPanelFix.add(jPanelFixMinus, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 15, 15, 15));
+
+        jPanelOptionBar.add(jPanelFix, new org.netbeans.lib.awtextra.AbsoluteConstraints(418, 5, 75, 30));
 
         jLabelActionBg.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/action_bg_600X40.png"))); // NOI18N
-        jPanel3.add(jLabelActionBg, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 600, 40));
+        jPanelOptionBar.add(jLabelActionBg, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 600, 40));
 
-        jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(25, 90, 600, 40));
+        jPanelBackground.add(jPanelOptionBar, new org.netbeans.lib.awtextra.AbsoluteConstraints(25, 90, 600, 40));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 654, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanelBackground, javax.swing.GroupLayout.PREFERRED_SIZE, 654, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanelBackground, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
@@ -506,46 +738,76 @@ public class UITamized extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonExitMousePressed
 
     private void jButtonMinimizeMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonMinimizeMousePressed
-        setState(UITamized.ICONIFIED);
+        setState(ICONIFIED);
     }//GEN-LAST:event_jButtonMinimizeMousePressed
 
     private void jButtonOpenMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonOpenMousePressed
         try {
-            setTableTamices(fileManager.openFile(), jTableTamices);
+            String response = saveRestoreData.openProject();
+            assignData();
+//
+            setTextByElement(jLabelFileInfo, response);
+            jLabelTimer(jLabelFileInfo, 0);
+            setTextByElement(jLabelFile, "Project: " + saveRestoreData.getPROJECT_FOLDER());
+            jLabelTitle.setText("SUELOSMART - " + saveRestoreData.getPROJECT_FOLDER());
+            jButtonSaveAs.setVisible(true);
         } catch (Exception e) {
         }
-        jTextFieldWeightSample.setText(fileManager.getValue().trim() + " g");
-        this.jButtonSaveAs.setVisible(true);
-        
-        jLabelFileInfo.setText("Listo");
-        jLabelTimer(jLabelFileInfo, 0);
-        jLabelFile.setText("File: " + fileManager.getFile().getName());
-        jButtonSaveAs.setVisible(true);
     }//GEN-LAST:event_jButtonOpenMousePressed
 
     private void jButtonSaveMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonSaveMousePressed
-        double value;
+        String project = saveRestoreData.getPROJECT_FOLDER();
         try {
-            value = Double.parseDouble((String) jTextFieldWeightSample.getText().trim().replace("g", ""));
-        } catch (NumberFormatException | NullPointerException e) {
-            value = 0;
-        }
+            if (project.equals("")) {
+                project = saveRestoreData.getProjectName();
+                saveRestoreData.addTable(new JTable(1, 1), "water");
+                saveRestoreData.addTable(new JTable(1, 1), "liquid-limit");
+                saveRestoreData.addTable(new JTable(1, 1), "result");
+                saveRestoreData.addTable(new JTable(1, 1), "plastic-limit");
+                saveRestoreData.addTable(new JTable(1, 1), "sieves");
+                saveRestoreData.addTable(new JTable(1, 1), "weight_sample");
+            }
+            if (project != null && !project.equals("")) {
 
-        jLabelFileInfo.setText(fileManager.save(value, getMatriz(jTableTamices)));
-        jLabelTimer(jLabelFileInfo, 0);
-        jLabelFile.setText("File: " + fileManager.getFile().getName());
-        jButtonSaveAs.setVisible(true);
+                saveRestoreData.addTable(jTableTamices, "sieves", 4);
+
+                JTable sample = new JTable(1, 2);
+                sample.setValueAt(jTextFieldWeightSample.getText(), 0, 1);
+
+                saveRestoreData.addTable(sample, "weight_sample", 5);
+
+                String response = saveRestoreData.saveProject();
+                jButtonSaveAs.setVisible(true);
+
+                setTextByElement(jLabelFileInfo, response);
+                jLabelTimer(jLabelFileInfo, 0);
+                setTextByElement(jLabelFile, "Project: " + saveRestoreData.getPROJECT_FOLDER());
+                jLabelTitle.setText("SUELOSMART - " + saveRestoreData.getPROJECT_FOLDER());
+            }
+        } catch (NumberFormatException | NullPointerException e) {
+        }
     }//GEN-LAST:event_jButtonSaveMousePressed
 
     private void jButtonSaveAsMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonSaveAsMousePressed
-        double value;
+        String project;
         try {
-            value = Double.parseDouble((String) jTextFieldWeightSample.getText().trim().replace("g", ""));
-        } catch (NumberFormatException | NullPointerException e) {
-            value = 0;
-        }
+            project = saveRestoreData.getProjectName();
 
-        fileManager.saveAs(value, getMatriz(jTableTamices));
+            if (project != null && !project.equals("")) {
+                saveRestoreData.removeTable(4);
+                saveRestoreData.removeTable(5);
+                saveRestoreData.addTable(jTableTamices, "sieves");
+
+                String response = saveRestoreData.saveProject();
+                jButtonSaveAs.setVisible(true);
+
+                setTextByElement(jLabelFileInfo, response);
+                jLabelTimer(jLabelFileInfo, 0);
+                setTextByElement(jLabelFile, "Project: " + saveRestoreData.getPROJECT_FOLDER());
+                jLabelTitle.setText("SUELOSMART - " + saveRestoreData.getPROJECT_FOLDER());
+            }
+        } catch (NumberFormatException | NullPointerException e) {
+        }
     }//GEN-LAST:event_jButtonSaveAsMousePressed
 
     private void jButtonRefreshMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonRefreshMousePressed
@@ -553,58 +815,156 @@ public class UITamized extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonRefreshMousePressed
 
     private void jButtonClearMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonClearMousePressed
-        clearTableValues(jTableTamices);
-        jTextFieldWeightSample.setText("");
+        if (JOptionPane.showConfirmDialog(
+                null,
+                "Advertencia: Todos los datos se borrarán. ",
+                "Confirmación",
+                JOptionPane.OK_CANCEL_OPTION) == 0) {
+            clearTableValues(jTableTamices);
+            setTextByElement(jTextFieldWeightSample, "Peso muestra (g)");
+            setForegroundtByElement(jTextFieldWeightSample, "#999999");
+        }
     }//GEN-LAST:event_jButtonClearMousePressed
 
     private void jButtonGraphMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonGraphMousePressed
-        GranulometryGraph granulometryGraph = new GranulometryGraph(getMatriz(jTableTamices));
+//        GranulometryGraph granulometryGraph = new GranulometryGraph(getMatriz(jTableTamices));
         Graph graph = new Graph(getMatriz(jTableTamices));
     }//GEN-LAST:event_jButtonGraphMousePressed
 
     private void jTextFieldWeightSampleFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextFieldWeightSampleFocusLost
-        jTextFieldWeightSample.setText(jTextFieldWeightSample.getText().trim() + " g");
+        String str;
+        if (jTextFieldWeightSample.getText().trim().replace("g", "").matches("^[0-9]+(\\.[0-9]+)?$")) {
+            str = jTextFieldWeightSample.getText().trim() + " g";
+        } else {
+            str = "Peso muestra (g)";
+            setForegroundtByElement(jTextFieldWeightSample, "#999999");
+        }
+        setTextByElement(jTextFieldWeightSample, str);
     }//GEN-LAST:event_jTextFieldWeightSampleFocusLost
 
     private void jTextFieldWeightSampleFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextFieldWeightSampleFocusGained
-        jTextFieldWeightSample.setText(jTextFieldWeightSample.getText().replace("g", "").trim());
+        setTextByElement(jTextFieldWeightSample, jTextFieldWeightSample.getText().replace("g", "").trim());
+        setForegroundtByElement(jTextFieldWeightSample, "#E0E0E0");
     }//GEN-LAST:event_jTextFieldWeightSampleFocusGained
+
+    private void jPanelHeaderMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanelHeaderMousePressed
+        xMouse = evt.getX();
+        yMouse = evt.getY();
+    }//GEN-LAST:event_jPanelHeaderMousePressed
+
+    private void jPanelHeaderMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanelHeaderMouseDragged
+        int x = evt.getXOnScreen();
+        int y = evt.getYOnScreen();
+        this.setLocation(x - xMouse, y - yMouse);
+    }//GEN-LAST:event_jPanelHeaderMouseDragged
+
+    private void jButtonBackMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonBackMousePressed
+        this.dispose();
+        UILlPl uILlPl = new UILlPl();
+        uILlPl.setData(saveRestoreData);
+        uILlPl.setVisible(true);
+    }//GEN-LAST:event_jButtonBackMousePressed
+
+    private void jTextFieldWeightSampleMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextFieldWeightSampleMousePressed
+        if (jTextFieldWeightSample.getText().equals("Peso muestra (g)")) {
+            setTextByElement(jTextFieldWeightSample, "");
+            setForegroundtByElement(jTextFieldWeightSample, "#E0E0E0");
+        }
+    }//GEN-LAST:event_jTextFieldWeightSampleMousePressed
+
+    private void jFormattedTextFieldFixFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jFormattedTextFieldFixFocusLost
+        if (jFormattedTextFieldFix.getText().trim().matches("^[0-9]+$")) {
+            if (Integer.parseInt(jFormattedTextFieldFix.getText()) > 15) {
+                jFormattedTextFieldFix.setText("15");
+            }
+
+            if (Integer.parseInt(jFormattedTextFieldFix.getText()) <= 0) {
+                jFormattedTextFieldFix.setText("1");
+            }
+        } else {
+            jFormattedTextFieldFix.setText("3");
+        }
+
+    }//GEN-LAST:event_jFormattedTextFieldFixFocusLost
+
+    private void jLabelFixPlusMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelFixPlusMouseClicked
+        if (Integer.parseInt(jFormattedTextFieldFix.getText()) < 15) {
+            jFormattedTextFieldFix.setText(String.valueOf(Integer.parseInt(jFormattedTextFieldFix.getText()) + 1));
+        }
+    }//GEN-LAST:event_jLabelFixPlusMouseClicked
+
+    private void jLabelFixMinusMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelFixMinusMouseClicked
+        if (Integer.parseInt(jFormattedTextFieldFix.getText()) > 1) {
+            jFormattedTextFieldFix.setText(String.valueOf(Integer.parseInt(jFormattedTextFieldFix.getText()) - 1));
+        }
+    }//GEN-LAST:event_jLabelFixMinusMouseClicked
+
+    private void jLabelFixPlusMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelFixPlusMouseEntered
+        jPanelFixPlus.setBackground(Color.decode("#E0E0E0"));
+    }//GEN-LAST:event_jLabelFixPlusMouseEntered
+
+    private void jLabelFixMinusMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelFixMinusMouseEntered
+        jPanelFixMinus.setBackground(Color.decode("#E0E0E0"));
+    }//GEN-LAST:event_jLabelFixMinusMouseEntered
+
+    private void jLabelFixPlusMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelFixPlusMouseExited
+        jPanelFixPlus.setBackground(Color.decode("#333333"));
+    }//GEN-LAST:event_jLabelFixPlusMouseExited
+
+    private void jLabelFixMinusMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelFixMinusMouseExited
+        jPanelFixMinus.setBackground(Color.decode("#333333"));
+    }//GEN-LAST:event_jLabelFixMinusMouseExited
+
+    private void jButtonNewMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonNewMousePressed
+        if (JOptionPane.showConfirmDialog(null,
+                "Advertencia: Los datos se perderán. \nGuarde si desea conservarlos.",
+                "Confirmación", JOptionPane.OK_CANCEL_OPTION) == 0) {
+
+            clearTableValues(jTableTamices);
+            setTextByElement(jTextFieldWeightSample, "Peso muestra (g)");
+            setForegroundtByElement(jTextFieldWeightSample, "#999999");
+
+            setTextByElement(jLabelFileInfo, "Nuevo archivo");
+            jLabelTimer(jLabelFileInfo, 0);
+            setTextByElement(jLabelFile, "");
+        }
+    }//GEN-LAST:event_jButtonNewMousePressed
 
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-
-                }
-            }
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(UITamized.class
-                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
-
-        }
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-
-        //</editor-fold>
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> {
-            new UITamized().setVisible(true);
-        });
-    }
+//    public static void main(String args[]) {
+//        /* Set the Nimbus look and feel */
+//        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+//        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+//         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+//         */
+//        try {
+//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+//                if ("Nimbus".equals(info.getName())) {
+//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+//                    break;
+//
+//                }
+//            }
+//        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
+//            java.util.logging.Logger.getLogger(UITamized.class
+//                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//
+//        }
+//        //</editor-fold>
+//        //</editor-fold>
+//        //</editor-fold>
+//        //</editor-fold>
+//
+//        //</editor-fold>
+//        //</editor-fold>
+//
+//        /* Create and display the form */
+//        java.awt.EventQueue.invokeLater(() -> {
+//            new UITamized().setVisible(true);
+//        });
+//    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonBack;
@@ -612,22 +972,30 @@ public class UITamized extends javax.swing.JFrame {
     private javax.swing.JButton jButtonExit;
     private javax.swing.JButton jButtonGraph;
     private javax.swing.JButton jButtonMinimize;
+    private javax.swing.JButton jButtonNew;
     private javax.swing.JButton jButtonOpen;
     private javax.swing.JButton jButtonRefresh;
     private javax.swing.JButton jButtonSave;
     private javax.swing.JButton jButtonSaveAs;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JFormattedTextField jFormattedTextFieldFix;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabelActionBg;
     private javax.swing.JLabel jLabelFile;
     private javax.swing.JLabel jLabelFileInfo;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel5;
-    private javax.swing.JPanel jPanel6;
-    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel jLabelFix;
+    private javax.swing.JLabel jLabelFixMinus;
+    private javax.swing.JLabel jLabelFixPlus;
+    private javax.swing.JLabel jLabelTitle;
+    private javax.swing.JPanel jPanelBackground;
+    private javax.swing.JPanel jPanelFix;
+    private javax.swing.JPanel jPanelFixMinus;
+    private javax.swing.JPanel jPanelFixPlus;
+    private javax.swing.JPanel jPanelFooter;
+    private javax.swing.JPanel jPanelHeader;
+    private javax.swing.JPanel jPanelOptionBar;
+    private javax.swing.JPanel jPanelTamices;
+    private javax.swing.JPanel jPanelWeightSample;
+    private javax.swing.JScrollPane jScrollPaneTamices;
     private javax.swing.JTable jTableTamices;
     private javax.swing.JTextField jTextFieldWeightSample;
     // End of variables declaration//GEN-END:variables
