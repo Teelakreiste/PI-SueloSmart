@@ -378,6 +378,7 @@ public class UITamized extends javax.swing.JFrame {
         jPanelFixMinus = new javax.swing.JPanel();
         jLabelFixMinus = new javax.swing.JLabel();
         jButtonHelp = new javax.swing.JButton();
+        jButtonAbout = new javax.swing.JButton();
         jLabelActionBg = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -727,7 +728,22 @@ public class UITamized extends javax.swing.JFrame {
         jButtonHelp.setRolloverIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/help_hover.png"))); // NOI18N
         jButtonHelp.setRolloverSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/help.png"))); // NOI18N
         jButtonHelp.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/help_hover.png"))); // NOI18N
-        jPanelOptionBar.add(jButtonHelp, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 12, 16, 16));
+        jPanelOptionBar.add(jButtonHelp, new org.netbeans.lib.awtextra.AbsoluteConstraints(548, 12, 16, 16));
+
+        jButtonAbout.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/about.png"))); // NOI18N
+        jButtonAbout.setBorderPainted(false);
+        jButtonAbout.setContentAreaFilled(false);
+        jButtonAbout.setFocusPainted(false);
+        jButtonAbout.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/about.png"))); // NOI18N
+        jButtonAbout.setRolloverIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/about_hover.png"))); // NOI18N
+        jButtonAbout.setRolloverSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/about.png"))); // NOI18N
+        jButtonAbout.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/about_hover.png"))); // NOI18N
+        jButtonAbout.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                jButtonAboutMousePressed(evt);
+            }
+        });
+        jPanelOptionBar.add(jButtonAbout, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 12, 16, 16));
 
         jLabelActionBg.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/action_bg_600X40.png"))); // NOI18N
         jPanelOptionBar.add(jLabelActionBg, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 600, 40));
@@ -945,6 +961,10 @@ public class UITamized extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jButtonNewMousePressed
 
+    private void jButtonAboutMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonAboutMousePressed
+        new UIAbout().setVisible(true);
+    }//GEN-LAST:event_jButtonAboutMousePressed
+
     /**
      * @param args the command line arguments
      */
@@ -982,6 +1002,7 @@ public class UITamized extends javax.swing.JFrame {
 //    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButtonAbout;
     private javax.swing.JButton jButtonBack;
     private javax.swing.JButton jButtonClear;
     private javax.swing.JButton jButtonExit;
