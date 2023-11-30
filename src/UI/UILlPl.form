@@ -421,7 +421,7 @@
               </Properties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-                  <AbsoluteConstraints x="418" y="5" width="75" height="30"/>
+                  <AbsoluteConstraints x="398" y="5" width="75" height="30"/>
                 </Constraint>
               </Constraints>
 
@@ -609,6 +609,36 @@
                 </Constraint>
               </Constraints>
             </Component>
+            <Component class="javax.swing.JButton" name="jButtonHelp">
+              <Properties>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/Assets/buttons/help.png"/>
+                </Property>
+                <Property name="borderPainted" type="boolean" value="false"/>
+                <Property name="contentAreaFilled" type="boolean" value="false"/>
+                <Property name="focusPainted" type="boolean" value="false"/>
+                <Property name="pressedIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/Assets/buttons/help.png"/>
+                </Property>
+                <Property name="rolloverIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/Assets/buttons/help_hover.png"/>
+                </Property>
+                <Property name="rolloverSelectedIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/Assets/buttons/help.png"/>
+                </Property>
+                <Property name="selectedIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/Assets/buttons/help_hover.png"/>
+                </Property>
+              </Properties>
+              <Events>
+                <EventHandler event="mousePressed" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jButtonHelpMousePressed"/>
+              </Events>
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
+                  <AbsoluteConstraints x="570" y="12" width="16" height="16"/>
+                </Constraint>
+              </Constraints>
+            </Component>
             <Component class="javax.swing.JLabel" name="jLabelActionBg">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
@@ -733,7 +763,7 @@
                     </Property>
                     <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
                       <Table columnCount="2" rowCount="4">
-                        <Column editable="true" title="Datos" type="java.lang.Object">
+                        <Column editable="false" title="Datos" type="java.lang.Object">
                           <Data value="Peso humedo (g)"/>
                           <Data value="Peso seco (g)"/>
                           <Data value="Contenido de agua (g)"/>
@@ -822,7 +852,7 @@
                     </Property>
                     <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
                       <Table columnCount="4" rowCount="8">
-                        <Column editable="true" title="DETERMINACION No." type="java.lang.Object">
+                        <Column editable="false" title="DETERMINACION No." type="java.lang.Object">
                           <Data value="RECIPIENTE No."/>
                           <Data value="No. GOLPES"/>
                           <Data value="P. RECIPIENTE + SUELO HUMEDO (g)"/>
@@ -945,7 +975,7 @@
                     </Property>
                     <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
                       <Table columnCount="2" rowCount="3">
-                        <Column editable="true" title="Datos" type="java.lang.Object">
+                        <Column editable="false" title="Datos" type="java.lang.Object">
                           <Data value="Limite Liquido (%)"/>
                           <Data value="Limite Plastico (%)"/>
                           <Data value="Indice de Plasticidad"/>
@@ -1047,7 +1077,7 @@
                     </Property>
                     <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
                       <Table columnCount="4" rowCount="7">
-                        <Column editable="true" title="DETERMINACION No." type="java.lang.Object">
+                        <Column editable="false" title="DETERMINACION No." type="java.lang.Object">
                           <Data value="RECIPIENTE No."/>
                           <Data value="P. RECIPIENTE + SUELO HUMEDO (g)"/>
                           <Data value="P. RECIPIENTE + SUELO SECO (g)"/>

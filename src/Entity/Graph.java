@@ -100,7 +100,7 @@ public final class Graph extends javax.swing.JFrame {
         draw(chart);
     }
 
-    private void draw(JFreeChart chart) {
+    public void draw(JFreeChart chart) {
         //Show of the graph in the desktop 
         ChartFrame frame = new ChartFrame("Distribución Granulométrica", chart);
         frame.pack();

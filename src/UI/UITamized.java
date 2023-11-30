@@ -8,6 +8,7 @@ package UI;
 import Entity.Constants;
 import Entity.Fonts;
 import Entity.Graph;
+import Entity.Help;
 import Entity.SaveRestoreData;
 import Entity.Tamices;
 import java.awt.Color;
@@ -43,12 +44,15 @@ public class UITamized extends javax.swing.JFrame {
     private SaveRestoreData saveRestoreData;
     private int xMouse, yMouse;
 
+    private Help help = new Help();
+
     public UITamized() {
         initComponents();
         init();
     }
 
     private void init() {
+        help.Help(jButtonHelp, jPanelBackground);
         saveRestoreData = new SaveRestoreData();
         font = new Fonts();
 
@@ -373,6 +377,7 @@ public class UITamized extends javax.swing.JFrame {
         jLabelFixPlus = new javax.swing.JLabel();
         jPanelFixMinus = new javax.swing.JPanel();
         jLabelFixMinus = new javax.swing.JLabel();
+        jButtonHelp = new javax.swing.JButton();
         jLabelActionBg = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -714,6 +719,16 @@ public class UITamized extends javax.swing.JFrame {
 
         jPanelOptionBar.add(jPanelFix, new org.netbeans.lib.awtextra.AbsoluteConstraints(418, 5, 75, 30));
 
+        jButtonHelp.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/help.png"))); // NOI18N
+        jButtonHelp.setBorderPainted(false);
+        jButtonHelp.setContentAreaFilled(false);
+        jButtonHelp.setFocusPainted(false);
+        jButtonHelp.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/help.png"))); // NOI18N
+        jButtonHelp.setRolloverIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/help_hover.png"))); // NOI18N
+        jButtonHelp.setRolloverSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/help.png"))); // NOI18N
+        jButtonHelp.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/help_hover.png"))); // NOI18N
+        jPanelOptionBar.add(jButtonHelp, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 12, 16, 16));
+
         jLabelActionBg.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/action_bg_600X40.png"))); // NOI18N
         jPanelOptionBar.add(jLabelActionBg, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 600, 40));
 
@@ -971,6 +986,7 @@ public class UITamized extends javax.swing.JFrame {
     private javax.swing.JButton jButtonClear;
     private javax.swing.JButton jButtonExit;
     private javax.swing.JButton jButtonGraph;
+    private javax.swing.JButton jButtonHelp;
     private javax.swing.JButton jButtonMinimize;
     private javax.swing.JButton jButtonNew;
     private javax.swing.JButton jButtonOpen;

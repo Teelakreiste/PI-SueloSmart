@@ -8,6 +8,7 @@ package UI;
 import Entity.AtterbergGraph;
 import Entity.Constants;
 import Entity.Fonts;
+import Entity.Help;
 import Entity.SaveRestoreData;
 import java.awt.Color;
 import java.awt.Component;
@@ -42,6 +43,8 @@ public class UILlPl extends javax.swing.JFrame {
     private Fonts font;
     private int xMouse, yMouse;
 
+    private Help help = new Help();
+
     SaveRestoreData saveRestoreData;
 
     /**
@@ -54,6 +57,7 @@ public class UILlPl extends javax.swing.JFrame {
 
     private void init() {
         font = new Fonts();
+        help.Help(jButtonHelp, jPanelBackground);
         saveRestoreData = new SaveRestoreData();
         setTitle(Constants.TITLE + " - Granulométria");
         setLocationRelativeTo(null);
@@ -159,6 +163,9 @@ public class UILlPl extends javax.swing.JFrame {
                 editor.setSelectionColor(Color.decode("#333333"));
 
                 boolean flag = editorSections(editor, row, section);
+                if (!flag) {
+                    editor.setBackground(Color.decode("#333333"));
+                }
 
                 editor.addFocusListener(new FocusAdapter() {
                     @Override
@@ -491,6 +498,7 @@ public class UILlPl extends javax.swing.JFrame {
         jPanelFixMinus = new javax.swing.JPanel();
         jLabelFixMinus = new javax.swing.JLabel();
         jButtonTamized = new javax.swing.JButton();
+        jButtonHelp = new javax.swing.JButton();
         jLabelActionBg = new javax.swing.JLabel();
         jPanelFooter = new javax.swing.JPanel();
         jLabelFileInfo = new javax.swing.JLabel();
@@ -769,7 +777,7 @@ public class UILlPl extends javax.swing.JFrame {
 
         jPanelFix.add(jPanelFixMinus, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 15, 15, 15));
 
-        jPanelOptionBar.add(jPanelFix, new org.netbeans.lib.awtextra.AbsoluteConstraints(418, 5, 75, 30));
+        jPanelOptionBar.add(jPanelFix, new org.netbeans.lib.awtextra.AbsoluteConstraints(398, 5, 75, 30));
 
         jButtonTamized.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButtonTamized.setForeground(new java.awt.Color(255, 255, 255));
@@ -786,6 +794,21 @@ public class UILlPl extends javax.swing.JFrame {
             }
         });
         jPanelOptionBar.add(jButtonTamized, new org.netbeans.lib.awtextra.AbsoluteConstraints(231, 5, 120, 30));
+
+        jButtonHelp.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/help.png"))); // NOI18N
+        jButtonHelp.setBorderPainted(false);
+        jButtonHelp.setContentAreaFilled(false);
+        jButtonHelp.setFocusPainted(false);
+        jButtonHelp.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/help.png"))); // NOI18N
+        jButtonHelp.setRolloverIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/help_hover.png"))); // NOI18N
+        jButtonHelp.setRolloverSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/help.png"))); // NOI18N
+        jButtonHelp.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/help_hover.png"))); // NOI18N
+        jButtonHelp.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                jButtonHelpMousePressed(evt);
+            }
+        });
+        jPanelOptionBar.add(jButtonHelp, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 12, 16, 16));
 
         jLabelActionBg.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/buttons/action_bg_600X40.png"))); // NOI18N
         jPanelOptionBar.add(jLabelActionBg, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 600, 40));
@@ -830,7 +853,15 @@ public class UILlPl extends javax.swing.JFrame {
             new String [] {
                 "Datos", "Valores"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, true
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         jTableWater.setFillsViewportHeight(true);
         jTableWater.setGridColor(new java.awt.Color(76, 175, 80));
         jTableWater.setRowHeight(32);
@@ -870,7 +901,15 @@ public class UILlPl extends javax.swing.JFrame {
             new String [] {
                 "DETERMINACION No.", "1", "2", "3"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, true, true, true
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         jTableLl.setFillsViewportHeight(true);
         jTableLl.setGridColor(new java.awt.Color(76, 175, 80));
         jTableLl.setRowHeight(32);
@@ -915,7 +954,15 @@ public class UILlPl extends javax.swing.JFrame {
             new String [] {
                 "Datos", "Valores"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, true
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         jTableResult.setFillsViewportHeight(true);
         jTableResult.setGridColor(new java.awt.Color(76, 175, 80));
         jTableResult.setRowHeight(32);
@@ -959,7 +1006,15 @@ public class UILlPl extends javax.swing.JFrame {
             new String [] {
                 "DETERMINACION No.", "1", "2", "3"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, true, true, true
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         jTablePl.setFillsViewportHeight(true);
         jTablePl.setGridColor(new java.awt.Color(76, 175, 80));
         jTablePl.setRowHeight(32);
@@ -1180,11 +1235,16 @@ public class UILlPl extends javax.swing.JFrame {
         uITamized.setVisible(true);
     }//GEN-LAST:event_jButtonTamizedActionPerformed
 
+    private void jButtonHelpMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonHelpMousePressed
+
+    }//GEN-LAST:event_jButtonHelpMousePressed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonBack;
     private javax.swing.JButton jButtonClear;
     private javax.swing.JButton jButtonExit;
     private javax.swing.JButton jButtonGraph;
+    private javax.swing.JButton jButtonHelp;
     private javax.swing.JButton jButtonMinimize;
     private javax.swing.JButton jButtonNew;
     private javax.swing.JButton jButtonOpen;

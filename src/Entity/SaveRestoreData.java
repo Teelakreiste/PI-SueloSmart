@@ -29,6 +29,10 @@ public class SaveRestoreData {
         return PROJECT_FOLDER;
     }
 
+    public String getFOLDER() {
+        return FOLDER;
+    }
+
     public String getProjectName() {
         String projectName = JOptionPane.showInputDialog("Enter the project name:");
 
@@ -78,6 +82,10 @@ public class SaveRestoreData {
         }
 
         return false;
+    }
+
+    public int getSize() {
+        return tables.size();
     }
 
     public String saveProject() {
@@ -152,7 +160,7 @@ public class SaveRestoreData {
         return response;
     }
 
-    private static String RemovePrefixYExtension(String name) {
+    protected static String RemovePrefixYExtension(String name) {
         // Usar expresión regular para eliminar el "numero_" y ".sm"
         return name.replaceAll("^\\d+_|\\.sm$", "");
     }
@@ -178,7 +186,7 @@ public class SaveRestoreData {
         return new DataTable(data, columnNames);
     }
 
-    private void saveData(DataTable dataTable, String folder, String fileName) {
+    public void saveData(DataTable dataTable, String folder, String fileName) {
         String response = "";
         try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(folder + File.separator + fileName))) {
             outputStream.writeObject(dataTable);
@@ -187,7 +195,7 @@ public class SaveRestoreData {
         }
     }
 
-    private DataTable restoreData(String folder, String fileName) {
+    public DataTable restoreData(String folder, String fileName) {
         try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(folder + File.separator + fileName))) {
             DataTable dataTable = (DataTable) inputStream.readObject();
             System.out.println("Data loaded successfully from " + folder + File.separator + fileName);
