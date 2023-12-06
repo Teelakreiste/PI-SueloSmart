@@ -174,7 +174,7 @@ public class UILogin extends javax.swing.JFrame {
         });
         jPanel1.add(jLabelOffline, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 390, 334, 20));
 
-        jLogo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/Logos/SueloSmart_250x250.png"))); // NOI18N
+        jLogo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/logos/SueloSmart_250x250.png"))); // NOI18N
         jLogo.setPreferredSize(new java.awt.Dimension(240, 240));
         jPanel1.add(jLogo, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 90, -1, -1));
 

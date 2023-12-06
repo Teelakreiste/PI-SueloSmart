@@ -1,6 +1,0 @@
-<map version="1.0">
-    <mapID target="introduction" url="html/introduction.html" />
-    <mapID target="main" url="html/main.html" />
-    <mapID target="particle_size_distribution" url="html/particle-size-distribution.html" />
-    <mapID target="options_bar" url="html/options-bar.html" />
-</map>
