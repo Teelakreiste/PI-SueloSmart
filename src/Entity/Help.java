@@ -23,7 +23,7 @@ public class Help {
     public void Help(JButton jButton, JPanel jPanel) {
         try {
             // Cara el fichero de ayuda
-            File file = new File("help" + File.separator + "help_set.hs");
+            File file = new File("src" + File.separator + "Help" + File.separator + "help_set.hs");
             URL hsURL = file.toURI().toURL();
 
             // Crea el HelpSet y el HelpBroker

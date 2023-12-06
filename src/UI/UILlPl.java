@@ -39,12 +39,12 @@ import org.apache.commons.math3.stat.regression.SimpleRegression;
  * @author osmel
  */
 public class UILlPl extends javax.swing.JFrame {
-    
+
     private Fonts font;
     private int xMouse, yMouse;
-    
+
     private Help help = new Help();
-    
+
     SaveRestoreData saveRestoreData;
 
     /**
@@ -54,7 +54,7 @@ public class UILlPl extends javax.swing.JFrame {
         initComponents();
         init();
     }
-    
+
     private void init() {
         font = new Fonts();
         help.Help(jButtonHelp, jPanelBackground);
@@ -68,75 +68,75 @@ public class UILlPl extends javax.swing.JFrame {
         getTableCellEditor(jTableWater, 1);
         customScrollBar(jScrollPaneWater);
         customTableHeader(jTableWater);
-        
+
         setSieved(jTableLl);
         getTableCellEditor(jTableLl, 2);
         customScrollBar(jScrollPaneLl);
         customTableHeader(jTableLl);
-        
+
         setSieved(jTablePl);
         getTableCellEditor(jTablePl, 4);
         customScrollBar(jScrollPanePl);
         customTableHeader(jTablePl);
-        
+
         setSieved(jTableResult);
         getTableCellEditor(jTableResult, 3);
         customScrollBar(jScrollPaneResult);
         customTableHeader(jTableResult);
         jButtonSaveAs.setVisible(false);
     }
-    
+
     private void font() {
         jLabelTitle.setFont(font.Font(font.ROBOTO_MEDIUM, 1, 18));
         jLabelTitleS1.setFont(font.Font(font.ROBOTO_MEDIUM, 1, 14));
         jLabelTitleS2.setFont(font.Font(font.ROBOTO_MEDIUM, 1, 14));
         jLabelTitleS3.setFont(font.Font(font.ROBOTO_MEDIUM, 1, 14));
         jLabelTitleS4.setFont(font.Font(font.ROBOTO_MEDIUM, 1, 14));
-        
+
         jLabelFile.setFont(font.Font(font.ROBOTO_LIGHT, 0, 11));
         jLabelFileInfo.setFont(font.Font(font.ROBOTO_LIGHT, 0, 11));
     }
-    
+
     public void setData(SaveRestoreData saveRestoreData) {
         this.saveRestoreData = saveRestoreData;
         assignData();
     }
-    
+
     private void assignData() {
         try {
             saveRestoreData.assignData(jTableWater, 0);
             saveRestoreData.assignData(jTableLl, 1);
             saveRestoreData.assignData(jTableResult, 2);
             saveRestoreData.assignData(jTablePl, 3);
-            
+
             jButtonSaveAs.setVisible(true);
-            
+
             setTextByElement(jLabelFileInfo, "Datos cargados exitosamente.");
             jLabelTimer(jLabelFileInfo, 0);
             setTextByElement(jLabelFile, "Project: " + saveRestoreData.getPROJECT_FOLDER());
             jLabelTitle.setText("SUELOSMART - " + saveRestoreData.getPROJECT_FOLDER());
         } catch (IndexOutOfBoundsException e) {
-            
+
         }
     }
-    
+
     private void setSieved(JTable jTable) {
         try {
             DefaultTableModel model = (DefaultTableModel) jTable.getModel();
-            
+
             DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
             renderer.setHorizontalAlignment(SwingConstants.CENTER);
-            
+
             for (int i = 1; i < jTable.getColumnCount(); i++) {
                 jTable.getColumnModel().getColumn(i).setCellRenderer(renderer);
             }
         } catch (Exception e) {
-            
+
         }
     }
-    
+
     private void getTableCellEditor(JTable jTable, int section) {
-        
+
         setColumnEditor(jTable, 1, section);
         switch (section) {
             case 2:
@@ -145,40 +145,40 @@ public class UILlPl extends javax.swing.JFrame {
                 setColumnEditor(jTable, 3, section);
                 break;
         }
-        
+
     }
-    
+
     private void setColumnEditor(JTable jTable, int columnNumber, int section) {
         TableColumn column = jTable.getColumnModel().getColumn(columnNumber);
-        
+
         column.setCellEditor(new DefaultCellEditor(new JTextField()) {
             @Override
             public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
                 JTextField editor = (JTextField) super.getTableCellEditorComponent(table, value, isSelected, row, column);
-                
+
                 editor.setBorder(new LineBorder(Color.decode("#388E3C"), 2));
                 editor.setBackground(Color.decode("#388E3C"));
                 editor.setForeground(Color.WHITE);
                 editor.setHorizontalAlignment(SwingConstants.CENTER);
                 editor.setSelectionColor(Color.decode("#333333"));
-                
+
                 boolean flag = editorSections(editor, row, section);
                 if (!flag) {
                     editor.setBackground(Color.decode("#333333"));
                 }
-                
+
                 editor.addFocusListener(new FocusAdapter() {
                     @Override
                     public void focusLost(FocusEvent e) {
                         if (flag) { // Actualizar valores solo para las filas 0 y 1
                             updateValues();
                         }
-                        
+
                         if (section == 3) {
                             updateValues();
                         }
                     }
-                    
+
                     private void updateValues() {
                         switch (section) {
                             case 1:
@@ -196,12 +196,12 @@ public class UILlPl extends javax.swing.JFrame {
                         }
                     }
                 });
-                
+
                 return editor;
             }
         });
     }
-    
+
     private boolean editorSections(JTextField editor, int row, int section) {
         boolean flag = false;
         switch (section) {
@@ -221,7 +221,7 @@ public class UILlPl extends javax.swing.JFrame {
         setEditorEditable(editor, flag);
         return flag;
     }
-    
+
     private void setEditorEditable(JTextField editor, boolean flag) {
         if (flag) { // Permitir la edición solo en las filas 0 y 1
             editor.setEditable(true);
@@ -229,7 +229,7 @@ public class UILlPl extends javax.swing.JFrame {
             editor.setEditable(false); // Deshabilitar la edición en otras filas
         }
     }
-    
+
     private void calcWaterContent(JTable jTable) {
         DefaultTableModel model = (DefaultTableModel) jTable.getModel();
         try {
@@ -239,10 +239,10 @@ public class UILlPl extends javax.swing.JFrame {
             model.setValueAt(fixFormatDecimal(waterContent), 2, 1);
             model.setValueAt(fixFormatDecimal((waterContent / dryWeight) * 100), 3, 1);
         } catch (NullPointerException | NumberFormatException e) {
-            
+
         }
     }
-    
+
     private void calcLiquidLimit(JTable jTable, int column) {
         DefaultTableModel model = (DefaultTableModel) jTable.getModel();
         try {
@@ -258,12 +258,12 @@ public class UILlPl extends javax.swing.JFrame {
             model.setValueAt(fixFormatDecimal(waterWeight), 4, column);
             model.setValueAt(fixFormatDecimal(drySoilWeight), 6, column);
             model.setValueAt(fixFormatDecimal(percentageMoisture), 7, column);
-            
+
         } catch (NullPointerException | NumberFormatException e) {
-            
+
         }
     }
-    
+
     private void calcPlasticLimit(JTable jTable, int column) {
         DefaultTableModel model = (DefaultTableModel) jTable.getModel();
         try {
@@ -280,10 +280,10 @@ public class UILlPl extends javax.swing.JFrame {
             model.setValueAt(fixFormatDecimal(percentageMoisture), 6, column); // % DE HUMEDAD.	
 
         } catch (NullPointerException | NumberFormatException e) {
-            
+
         }
     }
-    
+
     private void calcResults(JTable jTable) {
         try {
             double Ll = fixFormatDecimal(percentajeLl(jTableLl));
@@ -292,36 +292,36 @@ public class UILlPl extends javax.swing.JFrame {
             jTable.setValueAt(Pl, 1, 1);
             jTable.setValueAt(fixFormatDecimal(plasticityIndex(jTable, Ll, Pl)), 2, 1);
         } catch (NullPointerException | NumberFormatException e) {
-            
+
         }
     }
-    
+
     private double percentajeLl(JTable jTable) {
         double result = 0;
         try {
             double[][] data = new double[jTable.getColumnCount() - 1][2];
-            
+
             for (int j = 0; j < data[0].length; j++) {
                 int row = (j == 0) ? 1 : 7;
                 for (int i = 1; i <= data.length; i++) {
                     data[i - 1][j] = Double.valueOf(jTable.getValueAt(row, i).toString());
                 }
             }
-            
+
             SimpleRegression regression = new SimpleRegression();
-            
+
             regression.addData(data);
-            
+
             double intercept = regression.getIntercept();
             double slope = regression.getSlope();
-            
+
             result = (intercept + slope * 25);
         } catch (NullPointerException | NumberFormatException e) {
-            
+
         }
         return fixFormatDecimal(result);
     }
-    
+
     private double percentagePl(JTable jTable) {
         int count = 0;
         double average = 0;
@@ -334,18 +334,18 @@ public class UILlPl extends javax.swing.JFrame {
                 }
             }
         } catch (NullPointerException | NumberFormatException e) {
-            
+
         }
         average /= count;
         return average;
     }
-    
+
     private double plasticityIndex(JTable jTable, double Ll, double Pl) {
         String OLl = jTable.getValueAt(0, 1).toString();
         String OPl = jTable.getValueAt(1, 1).toString();
-        
+
         double result;
-        
+
         if (OLl.equals("NL") || OPl.equals("NP")) {
             if (OLl.equals("NL") && OPl.equals("NP")) {
                 result = 0;
@@ -359,10 +359,10 @@ public class UILlPl extends javax.swing.JFrame {
         } else {
             result = (Ll - Pl);
         }
-        
+
         return result;
     }
-    
+
     private void customScrollBar(JScrollPane jScrollPane) {
         jScrollPane.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
             @Override
@@ -371,7 +371,7 @@ public class UILlPl extends javax.swing.JFrame {
                 thumbDarkShadowColor = Color.decode("#282828");
                 thumbHighlightColor = Color.decode("#282828");
             }
-            
+
             @Override
             protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
                 g.setColor(Color.decode("#333333"));
@@ -379,23 +379,23 @@ public class UILlPl extends javax.swing.JFrame {
             }
         });
     }
-    
+
     private void customTableHeader(JTable jTable) {
-        
+
         jTable.getTableHeader().setDefaultRenderer(new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
                 super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-                
+
                 setBackground(Color.decode("#388E3C")); // Cambia el color del fondo según tus preferencias
                 setForeground(Color.WHITE); // Cambia el color del texto según tus preferencias
                 setHorizontalAlignment(SwingConstants.CENTER); // Centra el texto
                 return this;
             }
-            
+
         });
     }
-    
+
     private double fixFormatDecimal(double value) {
         // Crear la parte decimal del patrón
         StringBuilder decimalPattern = new StringBuilder(".");
@@ -403,7 +403,7 @@ public class UILlPl extends javax.swing.JFrame {
         for (int i = 0; i < decimalPlaces; i++) {
             decimalPattern.append("0");
         }
-        
+
         String strTolerance = "1e-" + (decimalPlaces - 1);
         double tolerance = Double.parseDouble(strTolerance); // Puedes ajustar este valor según tu precisión requerida
 
@@ -414,32 +414,32 @@ public class UILlPl extends javax.swing.JFrame {
             return Double.parseDouble(df.format(value));
         }
     }
-    
+
     private void clearTableValues(JTable jTable) {
         DefaultTableModel model = (DefaultTableModel) jTable.getModel();
         jLabelTitle.setText("SUELOSMART");
-        
+
         for (int i = 0; i < jTable.getRowCount(); i++) {
             for (int j = 1; j < jTable.getColumnCount(); j++) {
                 jTable.setValueAt("", i, j);
             }
         }
     }
-    
+
     private void refresh() {
         calcWaterContent(jTableWater);
         calcResults(jTableResult);
-        
+
         for (int i = 1; i < jTableLl.getColumnCount(); i++) {
             try {
                 calcLiquidLimit(jTableLl, i);
                 calcPlasticLimit(jTablePl, i);
             } catch (NumberFormatException e) {
-                
+
             }
         }
     }
-    
+
     public void jLabelTimer(JLabel jLabel, int timeVisible) {
         jLabel.setVisible(true);
         // Establece el tiempo en milisegundos que deseas que el JLabel sea visible
@@ -452,7 +452,7 @@ public class UILlPl extends javax.swing.JFrame {
         timer.setRepeats(false); // Para que el temporizador solo se ejecute una vez
         timer.start();
     }
-    
+
     private void setTextByElement(JComponent component, String text) {
         if (component instanceof JLabel) {
             ((JLabel) component).setText(text);
@@ -460,7 +460,7 @@ public class UILlPl extends javax.swing.JFrame {
             ((JTextField) component).setText(text);
         }
     }
-    
+
     private void setForegroundtByElement(JComponent component, String colorHex) {
         colorHex = (colorHex.contains("#")) ? colorHex : "#" + colorHex;
         component.setForeground(Color.decode(colorHex));
@@ -1086,9 +1086,9 @@ public class UILlPl extends javax.swing.JFrame {
                 }
             }
         } catch (NullPointerException | NumberFormatException e) {
-            
+
         }
-        
+
         AtterbergGraph atterbergGraph = new AtterbergGraph(values);
     }//GEN-LAST:event_jButtonGraphMousePressed
 
@@ -1113,7 +1113,7 @@ public class UILlPl extends javax.swing.JFrame {
         if (JOptionPane.showConfirmDialog(null,
                 "Advertencia: Los datos se perderán. \nGuarde si desea conservarlos.",
                 "Confirmación", JOptionPane.OK_CANCEL_OPTION) == 0) {
-            
+
             saveRestoreData = new SaveRestoreData();
             clearTableValues(jTableWater);
             clearTableValues(jTableLl);
@@ -1155,10 +1155,10 @@ public class UILlPl extends javax.swing.JFrame {
                 saveRestoreData.addTable(jTableLl, "liquid-limit", 1);
                 saveRestoreData.addTable(jTableResult, "result", 2);
                 saveRestoreData.addTable(jTablePl, "plastic-limit", 3);
-                
+
                 String response = saveRestoreData.saveProject();
                 jButtonSaveAs.setVisible(true);
-                
+
                 setTextByElement(jLabelFileInfo, response);
                 jLabelTimer(jLabelFileInfo, 0);
                 setTextByElement(jLabelFile, "Project: " + saveRestoreData.getPROJECT_FOLDER());
@@ -1172,17 +1172,17 @@ public class UILlPl extends javax.swing.JFrame {
         String project;
         try {
             project = saveRestoreData.getProjectName();
-            
+
             if (project != null && !project.equals("")) {
                 saveRestoreData.clearTables();
                 saveRestoreData.addTable(jTableWater, "water");
                 saveRestoreData.addTable(jTableLl, "liquid-limit");
                 saveRestoreData.addTable(jTableResult, "result");
                 saveRestoreData.addTable(jTablePl, "plastic-limit");
-                
+
                 String response = saveRestoreData.saveProject();
                 jButtonSaveAs.setVisible(true);
-                
+
                 setTextByElement(jLabelFileInfo, response);
                 jLabelTimer(jLabelFileInfo, 0);
                 setTextByElement(jLabelFile, "Project: " + saveRestoreData.getPROJECT_FOLDER());
@@ -1202,7 +1202,7 @@ public class UILlPl extends javax.swing.JFrame {
             if (Integer.parseInt(jFormattedTextFieldFix.getText()) > 15) {
                 jFormattedTextFieldFix.setText("15");
             }
-            
+
             if (Integer.parseInt(jFormattedTextFieldFix.getText()) <= 0) {
                 jFormattedTextFieldFix.setText("1");
             }

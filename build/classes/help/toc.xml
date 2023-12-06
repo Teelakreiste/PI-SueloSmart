@@ -1,0 +1,7 @@
+<toc version="1.0">
+    <tocitem text="Introdución" target="introduction">
+        <tocitem text="Barra de opciones" target="options_bar" />
+        <tocitem text="Ventana principal" target="main" />
+        <tocitem text="Distribución granulométrica" target="particle_size_distribution" />
+    </tocitem>
+</toc>
