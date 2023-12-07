@@ -26,8 +26,9 @@ Este proyecto contribuye directamente a los ODS de las Naciones Unidas:
 
 - **jFreeChart:** Librería para la generación de gráficos estadísticos.
 - **jCommon:** Librería para la generación de gráficos estadísticos.
-- **jUnit:** Librería para la ejecución de pruebas unitarias.
 - **JavaHelp:** Librería para la generación de archivos de ayuda.
+- **jUnit:** Librería para la ejecución de pruebas unitarias.
+- **Mockito:** Librería para la ejecución de pruebas unitarias.
 
 ## Instalación
 
